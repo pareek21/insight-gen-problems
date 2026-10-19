@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>4. Ramsey</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5a5a5f; --line:#d9d9de; --card:#f6f6f8; --accent:#1155cc; --good:#1b7f3b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#18181a; --fg:#ececec; --muted:#a8a8ad; --line:#3a3a3e;
+  --card:#222225; --accent:#8ab4ff; --good:#6fd08c; } }
+body { background:var(--bg); color:var(--fg); margin:0; font:16px/1.6 Georgia, "Times New Roman", serif; }
+main { max-width:820px; margin:0 auto; padding:28px 16px 64px; }
+h1 { font-size:1.6em; line-height:1.25; margin:0.2em 0 0.4em; } h2 { font-size:1.2em; margin-top:2em; }
+a { color:var(--accent); } .meta, .legend, nav { font:14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); }
+.statement, .hint { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 18px;
+  overflow-x:auto; }
+.hint { margin:14px 0; } .hint h3 { font:600 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin:12px 0 2px; } .hint .stats { font:14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); margin:0 0 6px; } .best { border-color:var(--good); border-width:2px; }
+.badge { color:var(--good); font-weight:600; }
+table { border-collapse:collapse; width:100%; font:14px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { background:var(--card); }
+.wrap { overflow-x:auto; }
+</style>
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+  processEscapes: true }, options: { ignoreHtmlClass: 'tex2jax_ignore' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head><body><main>
+<nav class="tex2jax_ignore"><a href="index.html">All problems</a></nav>
+<h1>4. Ramsey</h1>
+<p class="meta tex2jax_ignore">Erdős problem #183 ($100 and $250 prizes). Solved by OpenAI, Aug 2026: the growth is superexponential, so the limit is infinite.<br>Reference proof: 2,500 tokens (estimated (±20%)). Statement written for this study.</p>
+<h2>Problem</h2>
+<div class="statement"><p>For an integer $k \ge 1$, let $R_k(3)$ denote the $k$-color Ramsey number of the triangle: the least integer $N$ such that every coloring of the edges of the complete graph $K_N$ with $k$ colors contains a triangle whose three edges all have the same color.</p>
+<p>It is classical that $R_k(3)$ is finite and that the limit</p>
+<p>$$L = \lim_{k \to \infty} R_k(3)^{1/k}$$</p>
+<p>exists in $[1, \infty]$.</p>
+<p>Determine whether $L$ is finite, and prove your answer.</p></div>
+<h2>Hints</h2>
+<p class="legend tex2jax_ignore">N = Nemotron 3 Ultra (graded by 3 judges, majority vote); K = Kimi K3 (1 judge); A = GPT-6 Astra pro (1 judge, which also grades its own answers). Scores are correct answers out of attempts. Hint sizes are exact token counts with Nemotron&#x27;s tokenizer, and shares are of the reference proof&#x27;s length. Shortest to longest; the shortest hint with a success is outlined.</p>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 100-token budget</h3><p class="stats tex2jax_ignore">98 tokens (3.9% of the proof) · N 0/4</p><p>Recurse with palettes of omitted colors, preserving short proper vertex colorings of every color graph. Seek maps \(f,g\) on \([H]^s\) such that every \(x,y\) admits a coordinate \(d\) with \(x_d=f(y)_d\) or \(y_d=g(x)_d\). Apply these maps to internal labels: cross-edge colors are active on just one side, and within each block pair the opposite vertex fixes the active endpoint’s label.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 200-token budget</h3><p class="stats tex2jax_ignore">194 tokens (7.8% of the proof) · N 0/4</p><p>Preserve short proper vertex colorings of every color graph in a block recursion. Use maps \(f,g\) on \([H]^s\) such that every \(x,y\) has some \(d\) with \(x_d=f(y)_d\) or \(y_d=g(x)_d\). Random saturated matrices supply these for \(s\asymp H^2\log^2H\).</p>
+<p>Blocks omit separated palettes. For each pair, apply the maps to internal proper labels in colors from the two palette differences. The selected cross-edge color is active on one side only, its endpoint label fixed by the opposite vertex. This excludes two-block triangles; palette membership excludes three-block triangles. Give missing blocks a new proper label.</p>
+<p>Greedily packing palettes of size \(s\lceil\log H\rceil\) through \(H\) stages gives \(R_k(3)^{1/k}\gg H\) along a subsequence, forcing \(L=\infty\).</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 500-token budget</h3><p class="stats tex2jax_ignore">485 tokens (19% of the proof) · N 0/4</p><p>Fix \(H\ge3\). Construct maps \(f,g:[H]^s\to[H]^s\), with \(s\asymp H^2\log^2H\), such that \[ \forall x,y\ \exists d:\quad x_d=f(y)_d\ \text{or}\ y_d=g(x)_d. \] Use a uniform random \(s\times H^m\) matrix over \([H]\), with \(m\asymp H\log H\), in which every \(m+1\) columns contain all symbols in some row. A prescribed word avoids at most \(m\) columns; assigning these exceptions distinct coordinates produces the cover.</p>
+<p>Put \(q=\lceil\log H\rceil\), \(t=sq\). A maximal family of \(t\)-subsets of \([jt]\), with pairwise differences of size at least \(s\), has size \[ B_j\ge\frac{j^t}{s(e^2jq^2)^s}. \] Use these palettes to index blocks. A block with palette \(P\) contains the preceding coloring relabeled onto \([jt]\setminus P\). Maintain proper \((j+1)\)-colorability of every color graph at stage \(j\).</p>
+<p>For \(P&lt;Q\), choose distinct \(a_d\in Q\setminus P\) and \(b_d\in P\setminus Q\). For vertices \(u,v\) in these blocks, form words \(x,y\) from their proper internal labels in these colors. Color \(uv\) with \(a_d\) if \(x_d=f(y)_d\), and otherwise with a matching \(b_d\).</p>
+<p>Within a block pair, the opposite vertex determines the proper label at an active endpoint. Thus two equal-colored edges into an active block cannot complete a monochromatic triangle; a missing block has no internal edge of that color. Three-block triangles would require palette membership to alternate around an odd cycle. Give missing blocks the new label \(j+1\), retaining the internal labels on active blocks, to propagate the invariant.</p>
+<p>After \(H\) stages, \(k=Ht\) and \(N=\prod_{j=1}^H B_j\). The packing estimate and Stirling’s bound give \(\log N/k\ge\log H-O(1)\). Thus \(R_k(3)^{1/k}\gg H\) along these color counts, and the given limit is infinite.</p></div>
+<div class="hint best" id="best"><h3 class="tex2jax_ignore">Standard 500-token hint plus the key lemma&#x27;s statement <span class="badge">· shortest that worked</span></h3><p class="stats tex2jax_ignore">659 tokens (26% of the proof) · N 2/4</p><p>Key lemma: for \(H\ge3\), \(m=\lceil 2H\ln H\rceil\) and \(s=m(m+1)+1\), there are maps \(f,g:[H]^s\to[H]^s\) such that every \(x,y\in[H]^s\) have a coordinate \(d\) with \(x_d=f(y)_d\) or \(y_d=g(x)_d\).</p>
+<p>Proof: take a uniformly random \(s\times H^m\) matrix \(A\) over \([H]\), columns indexed by \([H]^m\). Fixed \(m+1\) columns miss some symbol in a given row with probability at most \(H(1-1/H)^{m+1}\le1/H\); a union bound over fewer than \(H^{m(m+1)}\) column sets gives an \(A\) in which every \(m+1\) columns show all symbols in some row. Put \(g(x)_r=A_{r,\bar x}\), with \(\bar x=(x_1,\dots,x_m)\). At most \(m\) columns disagree with \(y\) in every row; list them as \(z^{(1)},\dots,z^{(\rho)}\) and put \(f(y)_d=z^{(d)}_d\) for \(d\le\rho\), and \(1\) otherwise. If \(\bar x\) is not listed, \(g(x)\) agrees with \(y\) somewhere; if \(\bar x=z^{(d)}\), then \(x_d=f(y)_d\).</p>
+<p>Put \(q=\lceil\log H\rceil\), \(t=sq\). A maximal family of \(t\)-subsets of \([jt]\), with pairwise differences of size at least \(s\), has size \[ B_j\ge\frac{j^t}{s(e^2jq^2)^s}. \] Use these palettes to index blocks. A block with palette \(P\) contains the preceding coloring relabeled onto \([jt]\setminus P\). Maintain proper \((j+1)\)-colorability of every color graph at stage \(j\).</p>
+<p>For \(P&lt;Q\), choose distinct \(a_d\in Q\setminus P\) and \(b_d\in P\setminus Q\). For vertices \(u,v\) in these blocks, form words \(x,y\) from their proper internal labels in these colors. Color \(uv\) with \(a_d\) if \(x_d=f(y)_d\), and otherwise with a matching \(b_d\).</p>
+<p>Within a block pair, the opposite vertex determines the proper label at an active endpoint. Thus two equal-colored edges into an active block cannot complete a monochromatic triangle; a missing block has no internal edge of that color. Three-block triangles would require palette membership to alternate around an odd cycle. Give missing blocks the new label \(j+1\), retaining the internal labels on active blocks, to propagate the invariant.</p>
+<p>After \(H\) stages, \(k=Ht\) and \(N=\prod_{j=1}^H B_j\). The packing estimate and Stirling’s bound give \(\log N/k\ge\log H-O(1)\). Thus \(R_k(3)^{1/k}\gg H\) along these color counts, and the given limit is infinite.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 1000-token budget</h3><p class="stats tex2jax_ignore">939 tokens (38% of the proof) · N 4/4</p><p>Fix \(H\ge3\), and set \(m=\lceil2H\log H\rceil\), \(s=m(m+1)+1\), \(q=\lceil\log H\rceil\), \(t=sq\). Strengthen the recursion by maintaining proper \((j+1)\)-colorings of every color graph at stage \(j\).</p>
+<p>Construct maps \(f,g:[H]^s\to[H]^s\) so every \(x,y\) has a coordinate with \(x_d=f(y)_d\) or \(y_d=g(x)_d\). For this, choose an independent uniform matrix over \([H]\), with \(s\) rows and columns indexed by \([H]^m\). For fixed \(m+1\) columns, a row misses some symbol with probability at most \(H(1-1/H)^{m+1}\le H^{-1}\). A union bound over column sets bounds the probability of failure of saturation by \(H^{m(m+1)-s}&lt;1\). Here saturation means that every \(m+1\) columns contain all symbols in some row.</p>
+<p>Fix a saturated matrix \(A\). Set \(g(x)_r=A_{r,\bar x}\), where \(\bar x\) is the first \(m\) coordinates. For each \(y\), let \(E_y\) be the columns disagreeing with \(y\) in every row. Saturation implies \(|E_y|\le m\). Enumerate them as \(z^{(1)},\ldots,z^{(\rho)}\), and put \(f(y)_d=z_d^{(d)}\) for \(d\le\rho\), using 1 elsewhere. If \(\bar x\notin E_y\), then \(y\) agrees somewhere with \(g(x)\); otherwise its index in the enumeration gives agreement between \(x\) and \(f(y)\).</p>
+<p>At stage \(j\le H\), greedily pack palettes \(P\in\binom{[jt]}t\) with \(|P\setminus Q|\ge s\) for distinct pairs. Maximality gives a family of size \[ B_j\ge \frac{\binom{jt}{t}}{\sum_{d=0}^{s-1}\binom td\binom{(j-1)t}d} \ge\frac{j^t}{s(e^2jq^2)^s}. \] The last bound uses \(\binom{jt}{t}\ge j^t\) and a denominator at most \(s\binom ts\binom{jt}s\).</p>
+<p>Start with one vertex and no colors. Each palette \(P\) indexes a block \(V_P\) containing the previous coloring, relabeled onto \([jt]\setminus P\). These colors are active; colors in \(P\) are missing. Internal active color graphs have proper labels \(\ell_{P,c}\) in \([j]\).</p>
+<p>For \(P&lt;Q\), choose distinct \(a_d\in Q\setminus P\), \(b_d\in P\setminus Q\), for \(1\le d\le s\). On an edge \(uv\) between their blocks, form \[ x_d=\ell_{P,a_d}(u),\qquad y_d=\ell_{Q,b_d}(v). \] Color it \(a_d\) if \(x_d=f(y)_d\); if no such coordinate exists, use \(b_d\) with \(y_d=g(x)_d\). Fix deterministic tie-breaking. Every cross-edge color lies in \(P\triangle Q\), and its active endpoint’s proper label is determined by the opposite vertex within that block pair.</p>
+<p>Triangles inside one block are excluded inductively. If two equal-colored edges join an outside vertex to one block, either the color is missing internally or their internal endpoints have equal proper labels. Thus the internal edge cannot have that color. A three-block monochromatic triangle would require the color’s palette membership to differ on all three pairs, which is impossible.</p>
+<p>For each color, retain internal labels on active blocks and give missing blocks label \(j+1\). Cross edges join active to missing blocks, proving the next proper-coloring invariant.</p>
+<p>After \(H\) stages, \[ k=Ht,\qquad N=\prod_{j=1}^H B_j\ge \frac{(H!)^{t-s}}{s^H(e^2q^2)^{sH}}. \] Taking logarithms, using \(t=sq\) and \(\log(H!)\ge H\log H-H\), gives \(\log N/k\ge\log H-O(1)\). Hence \(R_k(3)^{1/k}\ge cH\) along an unbounded sequence of color counts. The assumed existence of the limit completes the argument.</p></div>
+</main></body></html>

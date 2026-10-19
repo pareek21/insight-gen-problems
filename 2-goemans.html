@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2. Goemans</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5a5a5f; --line:#d9d9de; --card:#f6f6f8; --accent:#1155cc; --good:#1b7f3b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#18181a; --fg:#ececec; --muted:#a8a8ad; --line:#3a3a3e;
+  --card:#222225; --accent:#8ab4ff; --good:#6fd08c; } }
+body { background:var(--bg); color:var(--fg); margin:0; font:16px/1.6 Georgia, "Times New Roman", serif; }
+main { max-width:820px; margin:0 auto; padding:28px 16px 64px; }
+h1 { font-size:1.6em; line-height:1.25; margin:0.2em 0 0.4em; } h2 { font-size:1.2em; margin-top:2em; }
+a { color:var(--accent); } .meta, .legend, nav { font:14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); }
+.statement, .hint { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 18px;
+  overflow-x:auto; }
+.hint { margin:14px 0; } .hint h3 { font:600 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin:12px 0 2px; } .hint .stats { font:14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); margin:0 0 6px; } .best { border-color:var(--good); border-width:2px; }
+.badge { color:var(--good); font-weight:600; }
+table { border-collapse:collapse; width:100%; font:14px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { background:var(--card); }
+.wrap { overflow-x:auto; }
+</style>
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+  processEscapes: true }, options: { ignoreHtmlClass: 'tex2jax_ignore' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head><body><main>
+<nav class="tex2jax_ignore"><a href="index.html">All problems</a></nav>
+<h1>2. Goemans</h1>
+<p class="meta tex2jax_ignore">Goemans&#x27; conjecture (1999). Disproved July 2026 (Rybin; verified in Isabelle). False: the answer is a counterexample.<br>Reference proof: 1,254 tokens. Statement written for this study from the conjecture as stated by Traub, Vargas Koch and Zenklusen (arXiv:2308.02651), posed as “prove or disprove”.</p>
+<h2>Problem</h2>
+<div class="statement"><p><strong>Single-source unsplittable flow.</strong> Let $G = (V, A)$ be a finite directed graph with a source $s \in V$ and terminals $t_1, \dots, t_k \in V \setminus \{s\}$ (distinct), where terminal $t_i$ has a demand $d_i &gt; 0$. Let $d_{\max} = \max_i d_i$.</p>
+<ul><li>A <em>flow</em> is a vector $x \in \mathbb{R}_{\ge 0}^{A}$ such that for every vertex $v$, the total value on arcs leaving $v$ minus the total value on arcs entering $v$ equals $\sum_i d_i$ if $v = s$, equals $-d_i$ if $v = t_i$, and equals $0$ otherwise.</li><li>An <em>unsplittable flow</em> $\mathcal{P}$ chooses one directed path $P_i$ from $s$ to $t_i$ for each $i$. Its load on an arc $a$ is $\mathrm{flow}_{\mathcal{P}}(a) = \sum_{i:\ a \in P_i} d_i$.</li><li>Given arc costs $c \in \mathbb{R}_{\ge 0}^{A}$, the cost of $x$ is $\sum_{a \in A} c(a)\,x(a)$, and the cost of $\mathcal{P}$ is $\sum_{a \in A} c(a)\,\mathrm{flow}_{\mathcal{P}}(a)$.</li></ul>
+<p>Dinitz, Garg and Goemans proved that for every such instance and every flow $x$, there is an unsplittable flow $\mathcal{P}$ with $\mathrm{flow}_{\mathcal{P}}(a) \le x(a) + d_{\max}$ for every arc $a$.</p>
+<p>Prove or disprove the following cost-preserving strengthening: for every such instance, every flow $x$ and every cost vector $c \ge 0$, there is an unsplittable flow $\mathcal{P}$ with</p>
+<ol><li>$\mathrm{flow}_{\mathcal{P}}(a) \le x(a) + d_{\max}$ for every arc $a \in A$, and</li><li>$\sum_{a \in A} c(a)\,\mathrm{flow}_{\mathcal{P}}(a) \le \sum_{a \in A} c(a)\,x(a)$.</li></ol></div>
+<h2>Hints</h2>
+<p class="legend tex2jax_ignore">N = Nemotron 3 Ultra (graded by 3 judges, majority vote); K = Kimi K3 (1 judge); A = GPT-6 Astra pro (1 judge, which also grades its own answers). Scores are correct answers out of attempts. Hint sizes are exact token counts with Nemotron&#x27;s tokenizer, and shares are of the reference proof&#x27;s length. Shortest to longest; the shortest hint with a success is outlined.</p>
+<div class="hint best" id="best"><h3 class="tex2jax_ignore">Targeted 5%, written from Nemotron&#x27;s no-hint attempts <span class="badge">· shortest that worked</span></h3><p class="stats tex2jax_ignore">67 tokens (5.3% of the proof) · N 2/2</p><p>Take demands 15,10,15 and a zero-cost three-arc chain from s with flows 24,14,9. Free routes exit after two, three, three arcs; paid routes after zero, zero, one, respectively. Each paid route has demand-weighted cost 30.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard 5%</h3><p class="stats tex2jax_ignore">70 tokens (5.6% of the proof) · N 0/2</p><p>Seek a counterexample with demands $15,10,15$, giving each terminal a free route or a paid route costing $30$ for its whole demand. Arrange bottlenecks so additive bounds forbid any two free choices, forcing cost at least $60$, while a feasible fractional flow costs $58$.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 100-token budget</h3><p class="stats tex2jax_ignore">96 tokens (7.7% of the proof) · N 2/4</p><p>Use three demands \(15,10,15\) and give each terminal a free route and a paid route costing \(30\). Aim for fractional cost \(58\), while making every pair of free choices violate an additive load bound, forcing cost at least \(60\). Build a zero-cost backbone \(s\to u\to v\to w\); the crucial asymmetry is that \(t_3\)'s paid route also traverses \(s\to u\).</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 200-token budget</h3><p class="stats tex2jax_ignore">190 tokens (15% of the proof) · N 4/4</p><p>Take demands \(15,10,15\). Use the zero-cost spine \(s\to u\to v\to w\), with flow values \(24,14,9\), and zero-cost exits \(v\to t_1,w\to t_2,w\to t_3\). Add paid arcs \(s\to t_1,s\to t_2,u\to t_3\), with respective flow values \(10,6,10\) and costs \(2,3,2\). Determine the exit flows by conservation. Each paid route costs \(30\); the given flow costs \(58\). Since both routes to \(t_3\) use \(s\to u\), the spine bounds \(39,29,24\) respectively rule out free pairs \((t_1,t_2),(t_1,t_3),(t_2,t_3)\). Thus at least two paid routes are forced.</p></div>
+</main></body></html>

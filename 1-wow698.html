@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1. WoW 698</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5a5a5f; --line:#d9d9de; --card:#f6f6f8; --accent:#1155cc; --good:#1b7f3b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#18181a; --fg:#ececec; --muted:#a8a8ad; --line:#3a3a3e;
+  --card:#222225; --accent:#8ab4ff; --good:#6fd08c; } }
+body { background:var(--bg); color:var(--fg); margin:0; font:16px/1.6 Georgia, "Times New Roman", serif; }
+main { max-width:820px; margin:0 auto; padding:28px 16px 64px; }
+h1 { font-size:1.6em; line-height:1.25; margin:0.2em 0 0.4em; } h2 { font-size:1.2em; margin-top:2em; }
+a { color:var(--accent); } .meta, .legend, nav { font:14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); }
+.statement, .hint { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 18px;
+  overflow-x:auto; }
+.hint { margin:14px 0; } .hint h3 { font:600 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin:12px 0 2px; } .hint .stats { font:14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); margin:0 0 6px; } .best { border-color:var(--good); border-width:2px; }
+.badge { color:var(--good); font-weight:600; }
+table { border-collapse:collapse; width:100%; font:14px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { background:var(--card); }
+.wrap { overflow-x:auto; }
+</style>
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+  processEscapes: true }, options: { ignoreHtmlClass: 'tex2jax_ignore' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head><body><main>
+<nav class="tex2jax_ignore"><a href="index.html">All problems</a></nav>
+<h1>1. WoW 698</h1>
+<p class="meta tex2jax_ignore">Fajtlowicz, Written on the Wall #698 (2004). Proved July 2026 by combining two 1993 lemmas. True.<br>Reference proof: 656 tokens. Statement written for this study from the Written on the Wall conjecture.</p>
+<h2>Problem</h2>
+<div class="statement"><p>Let $G$ be a finite simple graph with $m$ edges, and let $\lambda_1 \ge \lambda_2 \ge \dots \ge \lambda_n$ be the eigenvalues of its adjacency matrix, listed with multiplicity. Define</p>
+<p>$$s^-(G) = \Big(\sum_{i:\ \lambda_i &lt; 0} \lambda_i^2\Big)^{1/2},$$</p>
+<p>the Euclidean norm of the negative adjacency eigenvalues ($s^-(G) = 0$ if there are none), and the Randić index</p>
+<p>$$R(G) = \sum_{uv \in E(G)} \frac{1}{\sqrt{d(u)\,d(v)}},$$</p>
+<p>where $d(u)$ is the degree of $u$ and the sum runs over the edges of $G$ ($R(G) = 0$ if $G$ has no edges).</p>
+<p>Prove that $s^-(G) \le R(G)$ for every finite simple graph $G$.</p></div>
+<h2>Hints</h2>
+<p class="legend tex2jax_ignore">N = Nemotron 3 Ultra (graded by 3 judges, majority vote); K = Kimi K3 (1 judge); A = GPT-6 Astra pro (1 judge, which also grades its own answers). Scores are correct answers out of attempts. Hint sizes are exact token counts with Nemotron&#x27;s tokenizer, and shares are of the reference proof&#x27;s length. Shortest to longest; the shortest hint with a success is outlined.</p>
+<div class="hint best" id="best"><h3 class="tex2jax_ignore">Hand-written <span class="badge">· shortest that worked</span></h3><p class="stats tex2jax_ignore">14 tokens (2.1% of the proof) · N 2/2</p><p>First prove \(\lambda_1R(G)\ge m\).</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 50-token budget</h3><p class="stats tex2jax_ignore">45 tokens (6.9% of the proof) · N 4/4</p><p>First prove \(\lambda_1R(G)\ge m\), using the Rayleigh quotient at the vector of square-root degrees and Cauchy–Schwarz over edges. Combine this product bound with the sum of squared eigenvalues.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 100-token budget</h3><p class="stats tex2jax_ignore">90 tokens (14% of the proof) · N 4/4</p><p>For a graph with edges, obtain \(\lambda_1R(G)\ge m\) by testing the Rayleigh quotient on square-root degrees and applying Cauchy–Schwarz over edges. Then \(\lambda_1^2+R(G)^2\ge2m\). The trace identity says the squared eigenvalues sum to \(2m\); subtracting just the positive contribution \(\lambda_1^2\) already bounds the sum of negative squares from above.</p></div>
+</main></body></html>

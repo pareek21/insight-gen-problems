@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Problems and hints</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5a5a5f; --line:#d9d9de; --card:#f6f6f8; --accent:#1155cc; --good:#1b7f3b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#18181a; --fg:#ececec; --muted:#a8a8ad; --line:#3a3a3e;
+  --card:#222225; --accent:#8ab4ff; --good:#6fd08c; } }
+body { background:var(--bg); color:var(--fg); margin:0; font:16px/1.6 Georgia, "Times New Roman", serif; }
+main { max-width:820px; margin:0 auto; padding:28px 16px 64px; }
+h1 { font-size:1.6em; line-height:1.25; margin:0.2em 0 0.4em; } h2 { font-size:1.2em; margin-top:2em; }
+a { color:var(--accent); } .meta, .legend, nav { font:14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); }
+.statement, .hint { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 18px;
+  overflow-x:auto; }
+.hint { margin:14px 0; } .hint h3 { font:600 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin:12px 0 2px; } .hint .stats { font:14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); margin:0 0 6px; } .best { border-color:var(--good); border-width:2px; }
+.badge { color:var(--good); font-weight:600; }
+table { border-collapse:collapse; width:100%; font:14px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { background:var(--card); }
+.wrap { overflow-x:auto; }
+</style>
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+  processEscapes: true }, options: { ignoreHtmlClass: 'tex2jax_ignore' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head><body><main>
+<h1>Problems and hints</h1><p class="meta">The eight research problems in our experiments on how much of a proof a language model needs as a hint before it can prove the result, with the hints from the summary tables. Problems 5–8 come from <a href="https://github.com/openai/math/tree/1581d4cbdd69a0faf34b2089614fe2a814316a6a">OpenAI's math release</a>. Hints were written by GPT-6 Astra (pro) from the reference proof.</p><p class="legend">N = Nemotron 3 Ultra (graded by 3 judges, majority vote); K = Kimi K3 (1 judge); A = GPT-6 Astra pro (1 judge, which also grades its own answers). Scores are correct answers out of attempts. Hint sizes are exact token counts with Nemotron&#x27;s tokenizer, and shares are of the reference proof&#x27;s length.</p><div class="wrap tex2jax_ignore"><table><thead><tr><th>#</th><th>Problem</th><th>Source and status</th><th>Proof (tokens)</th></tr></thead><tbody><tr><td>1</td><td><a href="1-wow698.html">WoW 698</a><br>Norm of the negative eigenvalues ≤ Randić index</td><td>Fajtlowicz, Written on the Wall #698 (2004). Proved July 2026 by combining two 1993 lemmas. True.</td><td>656</td></tr><tr><td>2</td><td><a href="2-goemans.html">Goemans</a><br>Cost-preserving single-source unsplittable flow</td><td>Goemans&#x27; conjecture (1999). Disproved July 2026 (Rybin; verified in Isabelle). False: the answer is a counterexample.</td><td>1,254</td></tr><tr><td>3</td><td><a href="3-cdc.html">CDC</a><br>Cycle Double Cover Conjecture</td><td>Szekeres (1973), Seymour (1979). Proof released by OpenAI (~Aug 10, 2026). Posed with “assume a complete proof exists”, so the answer (true) is given.</td><td>1,964</td></tr><tr><td>4</td><td><a href="4-ramsey.html">Ramsey</a><br>Multicolor triangle Ramsey numbers: is the limit of R_k(3)^(1/k) finite?</td><td>Erdős problem #183 ($100 and $250 prizes). Solved by OpenAI, Aug 2026: the growth is superexponential, so the limit is infinite.</td><td>2,500 (est.)</td></tr><tr><td>5</td><td><a href="5-om127.html">#127 PTF sensitivity</a><br>Average sensitivity of degree-d polynomial threshold functions</td><td>Gotsman–Linial conjecture (1994), up to a constant. OpenAI release, Sept 2026. True.</td><td>5,509</td></tr><tr><td>6</td><td><a href="6-om132.html">#132 Sensitivity vs block sensitivity</a><br>Is bs(f) ≤ C·s(f)² for every Boolean function?</td><td>Question of Nisan and Szegedy (1994). OpenAI release, Sept 2026. False: a superquadratic separation.</td><td>6,442</td></tr><tr><td>7</td><td><a href="7-om173.html">#173 Seymour</a><br>Seymour&#x27;s second-neighborhood conjecture</td><td>Seymour&#x27;s conjecture (1990s). OpenAI release, Sept 2026. True.</td><td>10,362</td></tr><tr><td>8</td><td><a href="8-om322.html">#322 Tingley</a><br>Tingley&#x27;s problem: extending isometries between unit spheres</td><td>Tingley&#x27;s problem (1987). OpenAI release, Sept 2026. True.</td><td>8,427</td></tr></tbody></table></div>
+</main></body></html>

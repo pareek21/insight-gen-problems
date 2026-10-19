@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3. CDC</title>
+<style>
+:root { --bg:#ffffff; --fg:#1d1d1f; --muted:#5a5a5f; --line:#d9d9de; --card:#f6f6f8; --accent:#1155cc; --good:#1b7f3b; }
+@media (prefers-color-scheme: dark) { :root { --bg:#18181a; --fg:#ececec; --muted:#a8a8ad; --line:#3a3a3e;
+  --card:#222225; --accent:#8ab4ff; --good:#6fd08c; } }
+body { background:var(--bg); color:var(--fg); margin:0; font:16px/1.6 Georgia, "Times New Roman", serif; }
+main { max-width:820px; margin:0 auto; padding:28px 16px 64px; }
+h1 { font-size:1.6em; line-height:1.25; margin:0.2em 0 0.4em; } h2 { font-size:1.2em; margin-top:2em; }
+a { color:var(--accent); } .meta, .legend, nav { font:14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); }
+.statement, .hint { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 18px;
+  overflow-x:auto; }
+.hint { margin:14px 0; } .hint h3 { font:600 15px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  margin:12px 0 2px; } .hint .stats { font:14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  color:var(--muted); margin:0 0 6px; } .best { border-color:var(--good); border-width:2px; }
+.badge { color:var(--good); font-weight:600; }
+table { border-collapse:collapse; width:100%; font:14px/1.45 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; } th { background:var(--card); }
+.wrap { overflow-x:auto; }
+</style>
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']],
+  processEscapes: true }, options: { ignoreHtmlClass: 'tex2jax_ignore' } };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-chtml.js"></script>
+</head><body><main>
+<nav class="tex2jax_ignore"><a href="index.html">All problems</a></nav>
+<h1>3. CDC</h1>
+<p class="meta tex2jax_ignore">Szekeres (1973), Seymour (1979). Proof released by OpenAI (~Aug 10, 2026). Posed with “assume a complete proof exists”, so the answer (true) is given.<br>Reference proof: 1,964 tokens. Statement written for this study.</p>
+<h2>Problem</h2>
+<div class="statement"><p>A graph here is a finite loopless undirected multigraph: parallel edges are allowed and are distinct. A bridge is an edge whose deletion increases the number of connected components. A cycle is a connected 2-regular submultigraph; thus two parallel edges form a cycle of length two. A cycle double cover of G is a finite multiset of cycles of G such that every edge of G occurs in exactly two members of the multiset, counted with multiplicity.</p>
+<p>Resolve the Cycle Double Cover Conjecture completely: Every finite bridgeless loopless multigraph has a cycle double cover.</p>
+<p>Disconnected graphs are permitted, and the edgeless graph has the empty cycle double cover. Cycles in the cover need not be induced or edge-disjoint from one another; the requirement is exactly two total occurrences of each edge.</p>
+<p>Assume for purposes of this task that a complete affirmative proof exists. A complete solution must prove exactly the following:</p>
+<p>Every finite loopless multigraph with no bridge possesses a cycle double cover, without additional assumptions such as cubicity, planarity, connectivity, or higher edge-connectivity.</p>
+<p>Partial progress does not count unless it implies exactly the resolution above. In particular, proofs for special graph classes, constructions of cycle covers with some edges covered other than twice, bounded-length or prescribed-cycle variants, reductions to another unproved conjecture, computational verification through any fixed graph size, and candidate counterexamples without a complete nonexistence certificate are insufficient.</p></div>
+<h2>Hints</h2>
+<p class="legend tex2jax_ignore">N = Nemotron 3 Ultra (graded by 3 judges, majority vote); K = Kimi K3 (1 judge); A = GPT-6 Astra pro (1 judge, which also grades its own answers). Scores are correct answers out of attempts. Hint sizes are exact token counts with Nemotron&#x27;s tokenizer, and shares are of the reference proof&#x27;s length. Shortest to longest; the shortest hint with a success is outlined.</p>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 100-token budget</h3><p class="stats tex2jax_ignore">105 tokens (5.3% of the proof) · N 0/4</p><p>Use a nowhere-zero $\mathbb F_2^3$-flow on a bridgeless cubic graph to assign translated triangles of label pairs. Endpoint agreement gives linear equations. Dual obstructions vanish: each vertex contributes the parity of its nonzero incident functionals, and each supported edge is counted twice. Every label selects a degree-zero-or-two subgraph, and every edge has two labels. Reduce general graphs by replacing vertices with incidence rings; project the resulting covering cycles to even subgraphs and decompose them.</p></div>
+<div class="hint best" id="best"><h3 class="tex2jax_ignore">Standard, 200-token budget <span class="badge">· shortest that worked</span></h3><p class="stats tex2jax_ignore">206 tokens (10% of the proof) · N 1/4</p><p>Use the eight-flow theorem on a bridgeless cubic graph, with flow group $\Gamma=\mathbb F_2^3$. At a vertex with flow values $x,y,x+y$, assign the edges the sides of a translated triangle on $t,t+x,t+x+y$. Endpoint agreement is a linear system. Its dual consists of edge functionals annihilating their flow values and summing to zero at each vertex. Prove that each local obstruction equals the parity of the nonzero incident functionals; the essential fact is that the annihilator of the two-dimensional flow plane has dimension one. Globally, each supported edge is counted twice, so gluing succeeds. Label classes now have degree zero or two, with each edge in exactly two classes.</p>
+<p>For general graphs, replace vertices by incidence rings to obtain a bridgeless cubic graph. Project its covering cycles back to the original edges: counting incidences at each ring shows that every projection is even. Decomposing these projections into cycles preserves exact double coverage.</p></div>
+<div class="hint"><h3 class="tex2jax_ignore">Standard, 500-token budget</h3><p class="stats tex2jax_ignore">457 tokens (23% of the proof) · N 4/4</p><p>On a bridgeless cubic graph $H$, choose a nowhere-zero flow $f$ in $\Gamma=\mathbb F_2^3$ by the eight-flow theorem. Order each vertex’s incident edges as $a,b,c$, with values $x,y,x+y$, and set $g(v,a)=g(v,c)=0$, $g(v,b)=x$. Translating the pairs $\{g(v,e),g(v,e)+f(e)\}$ by $t_v\in\Gamma$ produces triangle sides. Endpoint agreement across $e=uv$ becomes $$t_u+t_v+\epsilon_e f(e)=d_e,\quad d_e=g(u,e)+g(v,e),\quad\epsilon_e\in\mathbb F_2.$$ The annihilators of this linear system’s image are precisely edge functionals $\eta_e$ satisfying $$\sum_{e\ni v}\eta_e=0,\qquad \eta_e(f(e))=0.$$</p>
+<p>At a vertex put $\lambda=\eta_b(x)=\eta_a(y)$. On $\operatorname{span}\{x,y\}$, the restrictions of $\eta_a,\eta_b,\eta_c$ are $(0,\lambda),(\lambda,0),(\lambda,\lambda)$. If $\lambda=1$, all three are nonzero. Otherwise they lie in a one-dimensional annihilator, so their zero sum forces zero or two nonzero terms. The local offset contribution is $\lambda$, hence equals the parity of supported incident edges. Summing counts each supported edge twice, giving $\sum_e\eta_e(d_e)=0$. Linear duality now proves compatibility.</p>
+<p>For each label, the glued pairs select a subgraph with degrees zero or two. Its nonempty components are cycles, and every edge receives exactly two labels.</p>
+<p>To remove cubicity, delete isolates and replace each degree-$d$ vertex by an incidence ring, using two parallel edges for $d=2$. The expansion is bridgeless: ring edges lie on rings, and original cycles lift through the rings to cover external edges. Project each covering cycle to its external edges. Counting incidences at each ring shows that this projection is even. Decompose it into edge-disjoint cycles, preserving both occurrences of every original edge.</p></div>
+</main></body></html>
