@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body { margin: 0; } [hidden] { display: none !important; } img { max-width: 100%; }</style>
+<title>#127 Hint Delta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: a short summary, then three pairs of hints in paired columns; red marks text only one hint of the pair has. */
+:root {
+  --paper: #f5f6f8;
+  --card: #ffffff;
+  --ink: #1b2130;
+  --muted: #586174;
+  --rule: #dde1e8;
+  --wash: #eceff3;
+  --std: #3346a6;
+  --map: #0d7466;
+  --cl: #8a3ea0;
+  --ok: #1f7a3a;
+  --ok-soft: #e1f2e6;
+  --some: #8f6400;
+  --some-soft: #f6ecd2;
+  --uniq-bg: #fbe1de;
+  --uniq-line: #c0322a;
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+    --std: #9aa6ff; --map: #55c4b0; --cl: #d6a2ee; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+    --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+  --std: #9aa6ff; --map: #55c4b0; --cl: #d6a2ee; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+  --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.55 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 36px; }
+.wrap > * { min-width: 0; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+
+.intro { display: grid; gap: 16px; max-width: 840px; }
+.kicker { font: 500 12px/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 600 clamp(28px, 4.6vw, 40px)/1.12 var(--serif); letter-spacing: -.01em; }
+.lede { font: 400 18px/1.5 var(--serif); }
+.findings { display: grid; gap: 8px; margin: 0; padding-left: 20px; }
+.findings li::marker { color: var(--muted); }
+.findings b { font-weight: 600; }
+.std-t { color: var(--std); font-weight: 600; }
+.map-t { color: var(--map); font-weight: 600; }
+.cl-t { color: var(--cl); font-weight: 600; }
+
+/* coverage summary */
+.tablewrap { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; overflow-x: auto; }
+table.cover { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; }
+table.cover th, table.cover td { padding: 10px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--wash); }
+table.cover thead th { font: 600 14px/1.3 var(--sans); border-bottom: 1px solid var(--rule); }
+table.cover thead th.std { color: var(--std); } table.cover thead th.map { color: var(--map); } table.cover thead th.cl { color: var(--cl); }
+table.cover tbody th { font-weight: 500; width: 34%; }
+table.cover tr.sub th { font: 600 11.5px/1.3 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding-bottom: 4px; border-bottom: 0; }
+.v { display: inline-block; font: 500 12.5px/1.3 var(--mono); padding: 2px 7px; border-radius: 4px; }
+.v.yes { background: var(--ok-soft); color: var(--ok); }
+.v.part { background: var(--some-soft); color: var(--some); }
+.v.no { background: var(--wash); color: var(--muted); }
+table.cover td .why { display: block; margin-top: 4px; font-size: 13px; color: var(--muted); }
+table.cover tr.result td, table.cover tr.result th { border-top: 1px solid var(--rule); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; font-size: 14px; color: var(--muted); }
+.controls label { display: inline-flex; gap: 8px; align-items: center; color: var(--ink); cursor: pointer; }
+.controls input { width: 16px; height: 16px; accent-color: var(--uniq-line); }
+.controls input:focus-visible { outline: 2px solid var(--uniq-line); outline-offset: 2px; }
+.key mark.u { padding: 1px 4px; }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump a { text-decoration: none; font: 500 13px/1 var(--sans); color: var(--ink); background: var(--card); border: 1px solid var(--rule); border-radius: 999px; padding: 8px 12px; }
+.jump a:hover { border-color: var(--muted); }
+.jump a:focus-visible { outline: 2px solid var(--std); outline-offset: 2px; }
+
+details.statement { background: var(--wash); border-radius: 6px; padding: 12px 16px; max-width: 860px; }
+details.statement summary { cursor: pointer; font: 500 13px/1.4 var(--sans); color: var(--muted); }
+details.statement summary:focus-visible { outline: 2px solid var(--std); outline-offset: 2px; }
+.stmt { display: grid; gap: .7em; margin-top: 8px; font: 400 16px/1.6 var(--serif); overflow-x: auto; }
+
+.pair { display: grid; gap: 14px; scroll-margin-top: 16px; }
+.pairhead { display: grid; gap: 4px; max-width: 860px; }
+.pairhead h2 { font: 600 clamp(21px, 2.6vw, 26px)/1.2 var(--serif); }
+.pairhead p { color: var(--muted); }
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.col { min-width: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 16px; }
+.col.standard { --c: var(--std); }
+.col.map { --c: var(--map); }
+.col.claude { --c: var(--cl); }
+.colhead { display: grid; gap: 6px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.colhead h3 { font: 600 18px/1.2 var(--sans); color: var(--c); display: flex; align-items: center; gap: 8px; }
+.writer { font-size: 13px; color: var(--muted); }
+.sw { width: 11px; height: 11px; border-radius: 2px; background: var(--c); flex: none; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font: 400 12.5px/1.3 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.chip { padding: 5px 8px; border-radius: 999px; font-weight: 500; }
+.chip.none { background: var(--wash); color: var(--muted); }
+.chip.some { background: var(--some-soft); color: var(--some); }
+
+.hint { display: grid; gap: 12px; font: 400 16px/1.68 var(--serif); }
+.hint p { overflow-wrap: anywhere; }
+.dm { overflow-x: auto; padding: 2px 4px; border-radius: 2px; }
+.dm.u-block { background: var(--uniq-bg); box-shadow: inset 3px 0 0 var(--uniq-line); }
+
+mark.u {
+  background: var(--uniq-bg);
+  color: inherit;
+  box-shadow: inset 0 -2px 0 var(--uniq-line);
+  padding: 1px 2px;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+sup.ref { font: 600 11px/1 var(--mono); color: var(--uniq-line); margin-left: 2px; }
+.plain mark.u { background: none; box-shadow: none; padding: 0; }
+.plain .dm.u-block { background: none; box-shadow: none; }
+.plain sup.ref { display: none; }
+
+.only { border-top: 1px solid var(--rule); padding-top: 14px; display: grid; gap: 8px; }
+.only h4 { font: 600 13px/1.3 var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.only ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; }
+.only li::marker { color: var(--uniq-line); font: 600 13px var(--mono); }
+.only b { font-weight: 600; }
+
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding-block: 2px; }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 6px; }
+footer p { max-width: 900px; }
+
+@media (max-width: 820px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .wrap { padding-block: 24px 48px; gap: 28px; }
+}
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+  svg: { fontCache: "global" }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+<div class="wrap" id="page">
+  <header class="intro">
+    <p class="kicker">OpenAI problem #127 · polynomial threshold functions · hints near 5% of the proof</p>
+    <h1>What each of three #127 hints says that the others don't</h1>
+    <p class="lede">Three hints of about the same length (254–311 tokens, 4.6–5.6% of a 5,525-token proof), each given to Kimi K3 at effort max: Astra's <span class="std-t">standard</span> hint, Astra's <span class="map-t">map</span> hint, and <span class="cl-t">Claude's</span> hint grown a sentence at a time from Kimi's failures (round 3). Below, each pair side by side, with the text only one of the two has marked in red.</p>
+    <ul class="findings">
+      <li><b>Standard and map split the proof between them.</b> Standard states the setup and the whole coupling half, and gives the edge bound only as a target. Map gives the edge half in full, with its proof, but as a general lemma: it never says to use the weight \(|p|\) or the sign \(\chi f\), and it has nothing on the coupling. Both got 0/4.</li>
+      <li><b>Claude's hint is the only one that ties the edge half to the problem:</b> the parity twist and why it works, the weight \(|p|\), the degree fact, and the commutator bound as the claim to prove. It has neither half in full. It got 1/4, and the correct proof built the coupling half on its own, with \(C=6\).</li>
+      <li><b>Four attempts each,</b> so 1/4 against 0/4 suggests a difference rather than shows one.</li>
+    </ul>
+  </header>
+
+  <section class="tablewrap" aria-label="What each hint covers">
+    <table class="cover">
+      <thead><tr><th>Part of the proof</th><th class="std">Standard 5%</th><th class="map">Map 5%</th><th class="cl">Claude r3</th></tr></thead>
+      <tbody>
+        <tr><th>The answer: yes, \(C=8\)</th><td><span class="v no">not stated</span></td><td><span class="v no">not stated</span></td><td><span class="v yes">stated</span></td></tr>
+        <tr><th>Setup: remove zeros, weight \(|p|\), sign \(h=\chi f\)</th><td><span class="v part">stated</span><span class="why">not why the parity helps</span></td><td><span class="v no">missing</span><span class="why">any weight, any sign</span></td><td><span class="v yes">stated, with why</span></td></tr>
+        <tr class="sub"><th colspan="4">Edge half</th></tr>
+        <tr><th>Commutator bound \(\|[M,Z_i]\|\le1\), so \(|M_{xy}|\le\tfrac12\)</th><td><span class="v no">missing</span></td><td><span class="v yes">stated, with proof</span></td><td><span class="v part">the bound only</span></td></tr>
+        <tr><th>Energy count to the edge bound \(\le 2\|MH+HM\|^2_{\rm HS}\)</th><td><span class="v part">target only</span></td><td><span class="v yes">stated, with proof</span></td><td><span class="v part">target only</span></td></tr>
+        <tr class="sub"><th colspan="4">Coupling half</th></tr>
+        <tr><th>Degree: \(h\) links grade \(r\) only to grades \(\ge n-d-r\)</th><td><span class="v yes">stated</span></td><td><span class="v no">missing</span></td><td><span class="v yes">stated</span></td></tr>
+        <tr><th>Binomial coupling and the coupling lemma</th><td><span class="v yes">stated</span></td><td><span class="v no">missing</span></td><td><span class="v no">missing</span></td></tr>
+        <tr class="result"><th>Kimi K3, effort max</th><td><b>0/4</b></td><td><b>0/4</b></td><td><b>1/4</b></td></tr>
+        <tr><th>Where attempts stopped (judge's notes)</th><td>3 hit the one-hour limit; 1 left edge recovery unproved.</td><td>2 left the degree-dependent bound unproved; 1 called it open after an algebra slip; 1 missed the parity twist.</td><td>1 correct, with its own coupling argument; 1 gap in the edge count; 1 rejected the hinted step and called it open; 1 hit the hour.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="controls">
+    <label for="hl"><input type="checkbox" id="hl" checked> Highlight what only one hint says</label>
+    <span class="key"><mark class="u">red</mark><sup class="ref">1</sup> = only in this hint of the pair, keyed to the list under each column</span>
+  </div>
+  <nav class="jump" aria-label="Pairs">
+    <a href="#std-map">Standard vs map</a>
+    <a href="#std-claude">Standard vs Claude r3</a>
+    <a href="#map-claude">Map vs Claude r3</a>
+  </nav>
+
+  <details class="statement">
+    <summary>Problem statement</summary>
+    <div class="stmt"><p>A polynomial threshold function assigns a sign to each vertex of the Boolean cube by evaluating a real polynomial. On the cube, the identities $x_i^2=1$ allow every polynomial to be replaced by a multilinear polynomial of no larger degree without changing its values. Average sensitivity measures the expected number of coordinate changes that reverse that sign. For $x\in\{-1,1\}^n$, let $x^{\oplus i}$ be obtained by reversing coordinate $i$. For $f:\{-1,1\}^n\to\{-1,1\}$, define</p><p>$$I(f)=\sum_{i=1}^n\mathbb P\{f(X)\ne f(X^{\oplus i})\},\qquad X\text{ uniform on }\{-1,1\}^n.$$</p><p>This quantity is also called the total influence of $f$. Throughout,</p><p>$$\operatorname{sgn}(t)=\begin{cases}1,&amp;t\ge0,\\-1,&amp;t&lt;0.\end{cases}$$</p><p>Determine whether there is an absolute constant $C&gt;0$ with the following property: for all integers $n\ge1$ and $1\le d\le n$, and every real multilinear polynomial $p$ in $n$ variables of degree at most $d$, the function $f:\{-1,1\}^n\to\{-1,1\}$ defined by $f(x)=\operatorname{sgn}(p(x))$, with $\operatorname{sgn}(0)=1$, satisfies</p><p>$$I(f)\le C\,d\sqrt n.$$</p><p>The polynomial may vanish on the cube, and no regularity condition is imposed on $p$. Prove your answer.</p></div>
+  </details>
+
+<section class="pair" id="std-map"><div class="pairhead"><h2>Standard vs map</h2><p>The two halves of the proof, split between two hints: standard has the coupling half, map has the edge half.</p></div><div class="cols"><section class="col standard"><header class="colhead"><h3><span class="sw"></span>Standard 5%</h3><p class="writer">Astra, written in one go</p><p class="stats"><span class="chip none">0/4 correct</span><span>254 tokens · 4.6%</span><span>3 of 4 attempts hit the one-hour limit</span></p></header><div class="hint"><p><mark class="u">Remove zeros by a small positive constant perturbation.</mark><sup class="ref" aria-label="note 1">1</sup> In counting inner product, let \(\Pi_k\) be the successive orthogonal layer projections of <mark class="u">\(\sqrt{|p|}\,V_k\)</mark><sup class="ref" aria-label="note 2">2</sup>, where \(V_k\) is the Fourier degree-\(\le k\) space. Set \(M=\sum_k(k-n/2)\Pi_k\) and <mark class="u">\(H=\operatorname{diag}((\prod_i x_i)f)\)</mark><sup class="ref" aria-label="note 2">2</sup>.</p>
+<p>Prove the edge-recovery bound \(I(f)\le2^{1-n}\|MH+HM\|_{\rm HS}^2\). <mark class="u">The masses \(2^{-n}\|\Pi_sH\Pi_r\|_{\rm HS}^2\) couple binomial marginals \(R,S\sim\operatorname{Bin}(n,1/2)\), with \(R+S\ge n-d\); their moment \(\mathbb E(R+S-n)^2\) is the normalized anticommutator energy.</mark><sup class="ref" aria-label="note 3">3</sup></p>
+<p><mark class="u">Reflect one index and use this one-sided coupling lemma: if \(U,V\) have the same law, standard deviation \(\sigma\), and \(V-U\le a\), then \(\mathbb E(U-V)^2\le8a\sigma\). Take \(U=S,V=n-R,a=d\).</mark><sup class="ref" aria-label="note 4">4</sup></p></div><div class="only"><h4>Only in this hint, not in map</h4><ol><li><b>Removing the zeros</b> of \(p\) first.</li><li><b>Which weight and which sign to use:</b> \(|p|\) and \(\chi f\). The map hint states its lemma for any weight and any sign.</li><li><b>The binomial coupling.</b> The block masses of \(H\) couple two \(\mathrm{Bin}(n,\tfrac12)\) laws with \(R+S\ge n-d\), and their second moment is the anticommutator energy.</li><li><b>The one-sided coupling lemma</b> \(\mathbb E(U-V)^2\le 8a\sigma\), and how to apply it.</li></ol></div></section><section class="col map"><header class="colhead"><h3><span class="sw"></span>Map 5%</h3><p class="writer">Astra, from its map of the proof's claims</p><p class="stats"><span class="chip none">0/4 correct</span><span>311 tokens · 5.6%</span><span>attempts averaged 74K tokens</span></p></header><div class="hint"><p>Let $V_k$ be the Fourier degree-at-most-$k$ space, with $V_{-1}=0$. In the counting inner product set $E_k=\sqrt wV_k\ominus\sqrt wV_{k-1}$ <mark class="u">for any $w&gt;0$</mark><sup class="ref" aria-label="note 1">1</sup>, with projections $\Pi_k$ and $M=\sum_k(k-n/2)\Pi_k$. Aim to prove that <mark class="u">any sign multiplier</mark><sup class="ref" aria-label="note 1">1</sup> $H$ satisfies</p>
+<div class="dm">\[
+\#\{\text{ordered equal-sign edges}\}\le2\|MH+HM\|_{\rm HS}^2.
+\]</div>
+<p><mark class="u">Coordinate multiplication $Z_i$ is grade-tridiagonal. With $J=\sum_k(-1)^k\Pi_k$ and $W=\sum_k\mathrm i^k\Pi_k$,
+</mark></p>
+<div class="dm u-block">\[
+W(Z_i-JZ_iJ)W^*/2=\mathrm i[M,Z_i].
+\]</div>
+<p><mark class="u">
+This proves $\|[M,Z_i]\|_{\rm op}\le1$, hence $|M_{xy}|\le1/2$ off the diagonal.</mark><sup class="ref" aria-label="note 2">2</sup> <mark class="u">Tridiagonality and the grade dimensions also give
+</mark></p>
+<div class="dm u-block">\[
+\sum_{x,y}\rho(x,y)|M_{xy}|^2\le\|M\|_{\rm HS}^2=n2^n/4,
+\]</div>
+<p><mark class="u">
+where $\rho$ is Hamming distance. Thus the nonnegative neighbor deficits $1/4-|M_{xy}|^2$ sum to at most twice the diagonal energy. The anticommutator detects diagonal energy as well as equal-sign edge energy.</mark><sup class="ref" aria-label="note 3">3</sup></p></div><div class="only"><h4>Only in this hint, not in standard</h4><ol><li><b>The general form:</b> the grading for any weight \(w\) and the edge bound for any sign multiplier \(H\). It never says to take \(w=|p|\) or \(H=\chi f\).</li><li><b>The commutator bound and its proof:</b> \(Z_i\) is tridiagonal in the grading, and conjugating by \(J\) and \(W\) gives \(\|[M,Z_i]\|\le1\), so \(|M_{xy}|\le\tfrac12\).</li><li><b>The energy count</b> that turns this into the edge bound: Hamming-weighted energy at most \(\|M\|_{\rm HS}^2\), edge deficits at most twice the diagonal energy, and the anticommutator sees both.</li></ol></div></section></div></section>
+<section class="pair" id="std-claude"><div class="pairhead"><h2>Standard vs Claude r3</h2><p>Same setup and grading. Standard adds the coupling half; Claude adds the answer, why the parity twist works, and the commutator bound.</p></div><div class="cols"><section class="col standard"><header class="colhead"><h3><span class="sw"></span>Standard 5%</h3><p class="writer">Astra, written in one go</p><p class="stats"><span class="chip none">0/4 correct</span><span>254 tokens · 4.6%</span><span>3 of 4 attempts hit the one-hour limit</span></p></header><div class="hint"><p>Remove zeros by a small positive constant perturbation. In counting inner product, let \(\Pi_k\) be the successive orthogonal layer projections of \(\sqrt{|p|}\,V_k\), where \(V_k\) is the Fourier degree-\(\le k\) space. Set \(M=\sum_k(k-n/2)\Pi_k\) and \(H=\operatorname{diag}((\prod_i x_i)f)\).</p>
+<p>Prove the edge-recovery bound \(I(f)\le2^{1-n}\|MH+HM\|_{\rm HS}^2\). <mark class="u">The masses \(2^{-n}\|\Pi_sH\Pi_r\|_{\rm HS}^2\) couple binomial marginals \(R,S\sim\operatorname{Bin}(n,1/2)\)</mark><sup class="ref" aria-label="note 1">1</sup>, with \(R+S\ge n-d\); <mark class="u">their moment \(\mathbb E(R+S-n)^2\) is the normalized anticommutator energy.</mark><sup class="ref" aria-label="note 1">1</sup></p>
+<p><mark class="u">Reflect one index and use this one-sided coupling lemma: if \(U,V\) have the same law, standard deviation \(\sigma\), and \(V-U\le a\), then \(\mathbb E(U-V)^2\le8a\sigma\). Take \(U=S,V=n-R,a=d\).</mark><sup class="ref" aria-label="note 2">2</sup></p></div><div class="only"><h4>Only in this hint, not in Claude r3</h4><ol><li><b>The binomial coupling.</b> The block masses of \(H\) couple two \(\mathrm{Bin}(n,\tfrac12)\) laws, and their second moment is the anticommutator energy.</li><li><b>The one-sided coupling lemma</b> that bounds that moment, and how to apply it.</li></ol></div></section><section class="col claude"><header class="colhead"><h3><span class="sw"></span>Claude r3</h3><p class="writer">Claude, grown a sentence at a time</p><p class="stats"><span class="chip some">1/4 correct</span><span>264 tokens · 4.8%</span><span>attempts averaged 156K tokens</span></p></header><div class="hint"><p><mark class="u">The answer is yes, with \(C=8\), by an exact linear-algebra argument rather than regularity or invariance.</mark><sup class="ref" aria-label="note 1">1</sup> After making \(p\) nonzero on the cube, multiply by the full parity \(\chi(x)=\prod_i x_i\): <mark class="u">the sensitive edges of \(f\) are exactly the edges on which \(h=\chi f\) is constant</mark><sup class="ref" aria-label="note 2">2</sup>, <mark class="u">and \(q=\chi p=h\,|p|\) has Fourier support only in degrees at least \(n-d\)</mark><sup class="ref" aria-label="note 3">3</sup>. Then orthogonalise the degree filtration in the weight \(|p|\): with \(V_k\) the functions of degree at most \(k\), let \(\Pi_k\) project (counting inner product) onto \(\sqrt{|p|}V_k\ominus\sqrt{|p|}V_{k-1}\); multiplication by \(h\) then maps grade \(r\) only into grades \(s\ge n-d-r\). For \(M=\sum_k(k-\frac n2)\Pi_k\), <mark class="u">prove \(\|[M,Z_i]\|\le1\) (\(Z_i\): multiplication by \(x_i\))</mark><sup class="ref" aria-label="note 4">4</sup> and deduce that the ordered neighbours with \(h(x)=h(y)\) number at most \(2\|MH+HM\|_{\rm HS}^2\).</p></div><div class="only"><h4>Only in this hint, not in standard</h4><ol><li><b>The answer and the kind of argument:</b> yes, \(C=8\), by exact linear algebra rather than regularity or invariance.</li><li><b>Why the parity twist helps:</b> the sensitive edges of \(f\) are exactly the edges where \(h=\chi f\) is constant.</li><li><b>Why the degree matters:</b> \(q=\chi p\) lives in degrees \(\ge n-d\). The standard hint uses this only through \(R+S\ge n-d\).</li><li><b>The key tool for the edge bound:</b> \(\|[M,Z_i]\|\le1\) for the coordinate multipliers.</li></ol></div></section></div></section>
+<section class="pair" id="map-claude"><div class="pairhead"><h2>Map vs Claude r3</h2><p>Both aim at the edge bound through the commutator. Map says how to prove it but not what to apply it to; Claude ties it to the problem.</p></div><div class="cols"><section class="col map"><header class="colhead"><h3><span class="sw"></span>Map 5%</h3><p class="writer">Astra, from its map of the proof's claims</p><p class="stats"><span class="chip none">0/4 correct</span><span>311 tokens · 5.6%</span><span>attempts averaged 74K tokens</span></p></header><div class="hint"><p>Let $V_k$ be the Fourier degree-at-most-$k$ space, with $V_{-1}=0$. In the counting inner product set $E_k=\sqrt wV_k\ominus\sqrt wV_{k-1}$ <mark class="u">for any $w&gt;0$</mark><sup class="ref" aria-label="note 1">1</sup>, with projections $\Pi_k$ and $M=\sum_k(k-n/2)\Pi_k$. Aim to prove that <mark class="u">any sign multiplier</mark><sup class="ref" aria-label="note 1">1</sup> $H$ satisfies</p>
+<div class="dm">\[
+\#\{\text{ordered equal-sign edges}\}\le2\|MH+HM\|_{\rm HS}^2.
+\]</div>
+<p><mark class="u">Coordinate multiplication $Z_i$ is grade-tridiagonal. With $J=\sum_k(-1)^k\Pi_k$ and $W=\sum_k\mathrm i^k\Pi_k$,
+</mark></p>
+<div class="dm u-block">\[
+W(Z_i-JZ_iJ)W^*/2=\mathrm i[M,Z_i].
+\]<sup class="ref" aria-label="note 2">2</sup></div>
+<p>This proves $\|[M,Z_i]\|_{\rm op}\le1$, <mark class="u">hence $|M_{xy}|\le1/2$ off the diagonal.</mark><sup class="ref" aria-label="note 3">3</sup> <mark class="u">Tridiagonality and the grade dimensions also give
+</mark></p>
+<div class="dm u-block">\[
+\sum_{x,y}\rho(x,y)|M_{xy}|^2\le\|M\|_{\rm HS}^2=n2^n/4,
+\]</div>
+<p><mark class="u">
+where $\rho$ is Hamming distance. Thus the nonnegative neighbor deficits $1/4-|M_{xy}|^2$ sum to at most twice the diagonal energy. The anticommutator detects diagonal energy as well as equal-sign edge energy.</mark><sup class="ref" aria-label="note 4">4</sup></p></div><div class="only"><h4>Only in this hint, not in Claude r3</h4><ol><li><b>The general form:</b> any weight \(w\) and any sign multiplier \(H\), with no link to \(|p|\) or \(\chi f\).</li><li><b>How to prove the commutator bound:</b> \(Z_i\) is tridiagonal in the grading, and conjugating by \(J\) and \(W\) turns the commutator into a contraction.</li><li><b>What the bound gives:</b> \(|M_{xy}|\le\tfrac12\) off the diagonal.</li><li><b>The energy count:</b> Hamming-weighted energy at most \(\|M\|_{\rm HS}^2\), edge deficits at most twice the diagonal energy, and the anticommutator sees both.</li></ol></div></section><section class="col claude"><header class="colhead"><h3><span class="sw"></span>Claude r3</h3><p class="writer">Claude, grown a sentence at a time</p><p class="stats"><span class="chip some">1/4 correct</span><span>264 tokens · 4.8%</span><span>attempts averaged 156K tokens</span></p></header><div class="hint"><p><mark class="u">The answer is yes, with \(C=8\), by an exact linear-algebra argument rather than regularity or invariance.</mark><sup class="ref" aria-label="note 1">1</sup> <mark class="u">After making \(p\) nonzero on the cube, multiply by the full parity \(\chi(x)=\prod_i x_i\): the sensitive edges of \(f\) are exactly the edges on which \(h=\chi f\) is constant,</mark><sup class="ref" aria-label="note 2">2</sup> <mark class="u">and \(q=\chi p=h\,|p|\) has Fourier support only in degrees at least \(n-d\).</mark><sup class="ref" aria-label="note 3">3</sup> Then orthogonalise the degree filtration <mark class="u">in the weight \(|p|\)</mark><sup class="ref" aria-label="note 2">2</sup>: with \(V_k\) the functions of degree at most \(k\), let \(\Pi_k\) project (counting inner product) onto \(\sqrt{|p|}V_k\ominus\sqrt{|p|}V_{k-1}\); <mark class="u">multiplication by \(h\) then maps grade \(r\) only into grades \(s\ge n-d-r\).</mark><sup class="ref" aria-label="note 3">3</sup> For \(M=\sum_k(k-\frac n2)\Pi_k\), prove \(\|[M,Z_i]\|\le1\) (\(Z_i\): multiplication by \(x_i\)) and deduce that the ordered neighbours with \(h(x)=h(y)\) number at most \(2\|MH+HM\|_{\rm HS}^2\).</p></div><div class="only"><h4>Only in this hint, not in map</h4><ol><li><b>The answer:</b> yes, \(C=8\), by exact linear algebra rather than regularity or invariance.</li><li><b>The link to the problem:</b> remove the zeros, multiply by the parity \(\chi\) so that sensitive edges become edges where \(h=\chi f\) is constant, and use the weight \(|p|\).</li><li><b>The degree fact that starts the coupling half:</b> \(q=\chi p\) has degrees \(\ge n-d\), so \(h\) links grade \(r\) only to grades \(\ge n-d-r\).</li></ol></div></section></div></section>
+
+  <footer>
+    <p>Kimi K3 at effort max with the standard instruction, 4 attempts per hint, graded by GPT-6.1 Sol. Standard and map: the baseline sweep of Oct 28 (om_baseline_standard, om_baseline_map), through OpenRouter. Claude r3: Nov 1–2 (om127_incremental, om127_r3_confirm), on Moonshot's own API, each attempt graded three times. Both routes stop an attempt at one hour, which counts as a failure.</p>
+    <p>The map hint is the one from the sweep, also shown on the standard-vs-map page. An earlier map hint (Oct 21, 267 tokens), which does name \(w=|p|\) and \(h=\chi f\) but has no coupling, got 1/4 at effort high.</p>
+    <p>Lengths are in Kimi's tokens; the standard-vs-map page counts these two Astra hints with Nemotron's tokenizer (241 and 315). Hint texts are exactly as the solver saw them. Problem statement and hints only; the reference proof is not shown.</p>
+  </footer>
+</div>
+<script>
+(function () {
+  var box = document.getElementById("hl"), page = document.getElementById("page");
+  function apply() { page.classList.toggle("plain", !box.checked); }
+  box.addEventListener("change", apply);
+  apply();
+})();
+</script>
+
+</html>
