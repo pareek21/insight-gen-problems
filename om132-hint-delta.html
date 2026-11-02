@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body { margin: 0; } [hidden] { display: none !important; } img { max-width: 100%; }</style>
+<title>#132 Hint Delta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: the two hints in paired columns, paragraph by paragraph; red marks text only one hint has. */
+:root {
+  --paper: #f5f6f8;
+  --card: #ffffff;
+  --ink: #1b2130;
+  --muted: #586174;
+  --rule: #dde1e8;
+  --wash: #eceff3;
+  --std: #3346a6;
+  --map: #0d7466;
+  --ok: #1f7a3a;
+  --ok-soft: #e1f2e6;
+  --some: #8f6400;
+  --some-soft: #f6ecd2;
+  --uniq-bg: #fbe1de;
+  --uniq-line: #c0322a;
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+    --std: #9aa6ff; --map: #55c4b0; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+    --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+  --std: #9aa6ff; --map: #55c4b0; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+  --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+  color-scheme: dark;
+}
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.55 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 32px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+
+.intro { display: grid; gap: 16px; max-width: 800px; }
+.kicker { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 600 clamp(28px, 4.6vw, 40px)/1.12 var(--serif); letter-spacing: -.01em; }
+.lede { font: 400 18px/1.5 var(--serif); }
+.findings { display: grid; gap: 8px; margin: 0; padding-left: 20px; }
+.findings li::marker { color: var(--muted); }
+.findings b { font-weight: 600; }
+.std-t { color: var(--std); font-weight: 600; }
+.map-t { color: var(--map); font-weight: 600; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; font-size: 14px; color: var(--muted); }
+.controls label { display: inline-flex; gap: 8px; align-items: center; color: var(--ink); cursor: pointer; }
+.controls input { width: 16px; height: 16px; accent-color: var(--uniq-line); }
+.controls input:focus-visible { outline: 2px solid var(--uniq-line); outline-offset: 2px; }
+.key mark.u { padding: 1px 4px; }
+
+details.statement { background: var(--wash); border-radius: 6px; padding: 12px 16px; max-width: 860px; }
+details.statement summary { cursor: pointer; font: 500 13px/1.4 var(--sans); color: var(--muted); }
+details.statement summary:focus-visible { outline: 2px solid var(--std); outline-offset: 2px; }
+.stmt { display: grid; gap: .7em; margin-top: 8px; font: 400 16px/1.6 var(--serif); overflow-x: auto; }
+
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.col { min-width: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 16px; }
+.col.standard { --c: var(--std); }
+.col.map { --c: var(--map); }
+.colhead { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.colhead h2 { font: 600 18px/1.2 var(--sans); color: var(--c); display: flex; align-items: center; gap: 8px; }
+.sw { width: 11px; height: 11px; border-radius: 2px; background: var(--c); flex: none; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font: 400 12.5px/1.3 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.chip { padding: 5px 8px; border-radius: 999px; font-weight: 500; }
+.standard .chip { background: var(--ok-soft); color: var(--ok); }
+.map .chip { background: var(--some-soft); color: var(--some); }
+
+.hint { display: grid; gap: 18px; }
+.para { display: grid; gap: 4px; }
+.role { font: 500 11.5px/1.3 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.para > p:last-child { font: 400 16px/1.68 var(--serif); overflow-wrap: anywhere; overflow-x: auto; }
+
+mark.u {
+  background: var(--uniq-bg);
+  color: inherit;
+  box-shadow: inset 0 -2px 0 var(--uniq-line);
+  padding: 1px 2px;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+sup.ref { font: 600 11px/1 var(--mono); color: var(--uniq-line); margin-left: 2px; }
+.plain mark.u { background: none; box-shadow: none; padding: 0; }
+.plain sup.ref { display: none; }
+
+.only { border-top: 1px solid var(--rule); padding-top: 14px; display: grid; gap: 8px; }
+.only h3 { font: 600 13px/1.3 var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.only ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; }
+.only li::marker { color: var(--uniq-line); font: 600 13px var(--mono); }
+.only b { font-weight: 600; }
+
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding-block: 2px; }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; }
+footer p { max-width: 860px; }
+
+@media (max-width: 820px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .wrap { padding-block: 24px 48px; gap: 24px; }
+}
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+  svg: { fontCache: "global" }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+<div class="wrap" id="page">
+  <header class="intro">
+    <p class="kicker">OpenAI problem #132 · sensitivity vs block sensitivity · 10% hints</p>
+    <h1>What each 10% hint says that the other doesn't</h1>
+    <p class="lede">Both hints are about 630 tokens, 10% of a 6,442-token proof, and follow the same skeleton: the parameters, the labelled tournament, the recursive construction, the four recurrences, the counting lemma's claims, the starting predicates, normalising, the blocks and the final OR. Text marked in red appears in only one of the two hints.</p>
+    <ul class="findings">
+      <li>The <span class="std-t">standard</span> hint spends its extra words on bookkeeping and the ending, including the answer: the ratio diverges.</li>
+      <li>The <span class="map-t">map</span> hint spends them on reasons inside the counting lemma and on why the parameter choices work. It never states the final bounds or the answer, and it gives the starting predicates last (paragraph labels).</li>
+      <li><b>Results:</b> standard 4/4, map 3/4. The wrong map answer declared the problem open after dropping a factor of 1/M when normalising the recurrences, which Sol called an arithmetic slip. One sample, so this only suggests a link.</li>
+    </ul>
+  </header>
+
+  <div class="controls">
+    <label for="hl"><input type="checkbox" id="hl" checked> Highlight what only one hint says</label>
+    <span class="key"><mark class="u">red</mark><sup class="ref">1</sup> = only in this hint, keyed to the list under each column</span>
+  </div>
+
+  <details class="statement">
+    <summary>Problem statement</summary>
+    <div class="stmt"><p>For a positive integer $n$, write $[n]=\{1,\ldots,n\}$. If $x\in\{0,1\}^n$ and $B\subseteq[n]$, let $x^B$ be obtained by flipping precisely the coordinates in $B$; abbreviate $x^{\{a\}}$ to $x^a$. For a total Boolean function $f:\{0,1\}^n\to\{0,1\}$, define</p>
+<p>$$s(f,x)=\bigl|\{a\in[n]:f(x^a)\ne f(x)\}\bigr|,\qquad s(f)=\max_x s(f,x).$$</p>
+<p>Its block sensitivity $\operatorname{bs}(f,x)$ is the largest number of pairwise disjoint nonempty sets $B_1,\ldots,B_m\subseteq[n]$ such that $f(x^{B_j})\ne f(x)$ for every $j$, and $\operatorname{bs}(f)=\max_x\operatorname{bs}(f,x)$.</p>
+<p>Determine whether there is a real constant $C&gt;0$ such that</p>
+<p>$$\operatorname{bs}(f)\le C\,s(f)^2$$</p>
+<p>for every positive integer $n$ and every nonconstant total Boolean function $f:\{0,1\}^n\to\{0,1\}$. Prove your answer.</p></div>
+  </details>
+
+  <div class="cols" id="cols">
+    <section class="col standard" aria-labelledby="h-standard">
+      <header class="colhead">
+        <h2 id="h-standard"><span class="sw"></span>Standard</h2>
+        <p class="stats"><span class="chip">4/4 correct</span><span>628 tokens</span><span>attempts averaged 73K tokens</span></p>
+      </header>
+      <div class="hint"><div class="para"><p class="role">1 · Parameters and labels</p><p>Fix \(d\), put \(L=d+2,k=2M^2+1,r=\lceil\sqrt M\rceil\), and take \(M\) large. Label a regular tournament on \([k]\) by \(a(i,j)\in[r]\) so no sixteen-vertex set admits choices \(m_j\) with \(a(i,j)=m_j\) on all internal edges \(i\to j\). Choose labels independently and apply a union bound.</p></div>
+<div class="para"><p class="role">2 · Starting predicates and the construction</p><p><mark class="u">Keep \(H_\ell=d+1-\ell\) nested predicates.</mark><sup class="ref" aria-label="note 3">3</sup> Initially use \(P_{0,q}=\mathbf1\{D\le H_0-q\}\), where \(D\) is distance to the nearest of \(M\) centres with disjoint supports of size \(L\). At level \(\ell\), use \(k\) rows of \(r\) children <mark class="u">and set \(Q=H_{\ell-1}\)</mark><sup class="ref" aria-label="note 3">3</sup>. Define \(P_{\ell,q}\) as the OR of clauses indexed by rows \(i\): require \(P_{\ell-1,Q}(x_{i,c})=1\) for every \(c\), and \(P_{\ell-1,Q-q}(x_{j,a(i,j)})=0\) for every \(i\to j\).</p></div>
+<div class="para"><p class="role">3 · Profiles, recurrences, counting lemma</p><p>Track maxima \(S_{\ell,b}\) of one-sided sensitivity and \(J_{\ell,b}\) of flips changing two distinct predicates simultaneously from \(b\) to \(1-b\) on the same input; <mark class="u">empty maxima are zero</mark><sup class="ref" aria-label="note 5">5</sup>. Initially \(S_{0,0}\le L,S_{0,1}\le LM,J_{0,b}=0\); <mark class="u">the last fact uses that \(D\) is 1-Lipschitz</mark><sup class="ref" aria-label="note 4">4</sup>. Suppress the current level and prime the previous one. Establish \[
+S_1\le M^2S'_0+rS'_1,\qquad J_1\le M^2J'_0+rS'_1,
+\] \[
+S_0\le16S'_0+S'_1+3J'_1,\qquad J_0\le16S'_0+3J'_1.
+\] At a zero-valued input, repairable clauses fail exactly one condition. Labels bound target-failing clauses by fifteen. Gate-failing clauses induce a tournament of maximum outdegree one, so there are at most three and at most one sink. Repairing a nonsink’s gate changes two child predicates; for joint transitions even the sink must cross two thresholds.</p></div>
+<div class="para"><p class="role">4 · Ending: bounds, blocks, final OR, result</p><p>Normalize by \(M^{\ell+b}\). For fixed \(d\), taking \(M\) sufficiently large makes the recurrences give \(S_{\ell,b}\le2LM^{\ell+b}\) through depth \(d\). <mark class="u">Extend support blocks by uniting corresponding copies across one row</mark><sup class="ref" aria-label="note 2">2</sup>: this gives \(Mk^\ell\) disjoint blocks <mark class="u">changing every predicate from zero to one at the all-zero input</mark><sup class="ref" aria-label="note 2">2</sup>. Finally OR \(M\) depth-\(d\) copies. <mark class="u">Its sensitivity is at most \(2LM^{d+1}\), its block sensitivity at least \(M^2k^d\), and the ratio at least \(2^d/(4L^2)\), which diverges.</mark><sup class="ref" aria-label="note 1">1</sup></p></div></div>
+      <div class="only">
+        <h3>Only in the standard hint</h3>
+        <ol><li><b>The conclusion.</b> The final bounds on sensitivity and block sensitivity, and that their ratio diverges, so the answer is no.</li><li><b>How the disjoint blocks are built</b>, and that each one flips every predicate at the all-zero input. The map hint gives only their number.</li><li><b>Level-by-level bookkeeping.</b> Level \(\ell\) keeps \(d+1-\ell\) predicates, so one is used up per level and \(f\) is the last one left. The map hint gives one generic step and says “iterate \(d\) times”.</li><li><b>Why the starting joint profiles are zero:</b> the distance \(D\) is 1-Lipschitz.</li><li><b>A convention:</b> empty maxima count as zero.</li></ol>
+      </div>
+    </section>
+    <section class="col map" aria-labelledby="h-map">
+      <header class="colhead">
+        <h2 id="h-map"><span class="sw"></span>Map (method 0)</h2>
+        <p class="stats"><span class="chip">3/4 correct</span><span>629 tokens</span><span>attempts averaged 50K tokens</span></p>
+      </header>
+      <div class="hint"><div class="para"><p class="role">1 · Parameters and labels</p><p>Fix \(d\), put \(L=d+2\), and take \(M\) large, \(k=2M^2+1\), \(r=\lceil\sqrt M\rceil\). Label a regular tournament on \([k]\) so no 16 vertices admit positions \(m_j\in[r]\) with \(a(i,j)=m_j\) on every internal edge \(i\to j\). Independent uniform labels work by the union bound <mark class="u">\(k^{16}r^{-104}&lt;1\)</mark><sup class="ref" aria-label="note 1">1</sup>.</p></div>
+<div class="para"><p class="role">2 · One step of the construction</p><p>Given nested \(P_1\ge\cdots\ge P_Q\), arrange disjoint children \(x_{j,c}\) in \(k\) rows of \(r\) positions. Define \(R_q\), \(1\le q&lt;Q\), as the OR over \(i\) of \[
+\bigwedge_c[P_Q(x_{i,c})=1]\ \wedge\
+\bigwedge_{i\to j}[P_{Q-q}(x_{j,a(i,j)})=0].
+\] Let \(S_b\) maximize ordinary one-sided sensitivity over the family, and \(J_b\) maximize the number of bits simultaneously flipping two distinct predicates from \(b\) to \(1-b\).</p></div>
+<div class="para"><p class="role">3 · Counting lemma and recurrences</p><p>At a zero, each repairable clause fails exactly one condition. Fewer than 16 candidates fail a target: <mark class="u">their unique failed positions would otherwise violate the label property</mark><sup class="ref" aria-label="note 2">2</sup>. Gate-failing candidates induce outdegrees at most one, <mark class="u">since every edge between them gives a failed gate</mark><sup class="ref" aria-label="note 3">3</sup>; hence there are at most three. Except possibly one sink, repairing a gate <mark class="u">also destroys the strongest target in another candidate row, costing \(J_1\)</mark><sup class="ref" aria-label="note 4">4</sup>. For joint acceptance at \(q&lt;q'\), <mark class="u">use candidates at \(q\): every gate repair yielding acceptance at \(q'\) flips both child thresholds \(Q-q,Q-q'\)</mark><sup class="ref" aria-label="note 5">5</sup>, even at the sink. Writing primes for the resulting family gives \[
+\begin{aligned}
+S'_0&amp;\le16S_0+S_1+3J_1,&amp;J'_0&amp;\le16S_0+3J_1,\\
+S'_1&amp;\le M^2S_0+rS_1,&amp;J'_1&amp;\le M^2J_0+rS_1.
+\end{aligned}
+\] <mark class="u">For transitions from one, prove the bounds by fixing a satisfied clause.</mark><sup class="ref" aria-label="note 6">6</sup></p></div>
+<div class="para"><p class="role">4 · Starting predicates, iteration, blocks, final OR</p><p>Start with \(M\) disjoint weight-\(L\) centres on \(LM\) bits, and predicates for distance to the nearest centre at most \(d,d-1,\ldots,0\). Initially \(S_0\le L,S_1\le LM\) and \(J_0=J_1=0\). Iterate \(d\) times. Normalize level-\(\ell\) profiles by \(M^{\ell+b}\); for fixed \(d\), taking \(M\) sufficiently large keeps normalized ordinary profiles below \(2L\), <mark class="u">since the normalized joint profiles tend to zero</mark><sup class="ref" aria-label="note 7">7</sup>. The initial \(M\) disjoint sensitive blocks at zero become \(Mk^\ell\) blocks at level \(\ell\). Finally OR together \(M\) final copies <mark class="u">to balance the two one-sided sensitivities</mark><sup class="ref" aria-label="note 8">8</sup>.</p></div></div>
+      <div class="only">
+        <h3>Only in the map hint</h3>
+        <ol><li><b>The union-bound arithmetic</b> behind the labelled tournament.</li><li><b>Why fewer than 16 clauses fail a target.</b> The standard hint only states the bound.</li><li><b>Why gate-failing clauses have out-degree at most one.</b></li><li><b>Where the \(3J_1\) term comes from:</b> repairing a gate also breaks a target in another candidate row.</li><li><b>How joint transitions are counted:</b> through the two thresholds \(Q-q\) and \(Q-q'\).</li><li><b>How to prove the bounds for transitions from one.</b></li><li><b>Why taking \(M\) large closes the recurrences.</b></li><li><b>What the final OR is for.</b></li></ol>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>From the insight-gen baseline sweep (om_baseline_standard, om_baseline_map): Kimi K3 at effort max, 4 attempts per hint, graded by GPT-6.1 Sol. Hint texts are exactly as the learner saw them. Problem statement and hints only; the reference proof is not shown.</p>
+  </footer>
+</div>
+<script>
+(function () {
+  var box = document.getElementById("hl"), page = document.getElementById("cols");
+  function apply() { page.classList.toggle("plain", !box.checked); }
+  box.addEventListener("change", apply);
+  apply();
+})();
+</script>
+
+</html>
