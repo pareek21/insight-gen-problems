@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>#322 Hint Delta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: the two hints in paired columns, paragraph by paragraph; red marks text only one hint has. */
+:root {
+  --paper: #f5f6f8;
+  --card: #ffffff;
+  --ink: #1b2130;
+  --muted: #586174;
+  --rule: #dde1e8;
+  --wash: #eceff3;
+  --std: #3346a6;
+  --map: #0d7466;
+  --ok: #1f7a3a;
+  --ok-soft: #e1f2e6;
+  --some: #8f6400;
+  --some-soft: #f6ecd2;
+  --uniq-bg: #fbe1de;
+  --uniq-line: #c0322a;
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+    --std: #9aa6ff; --map: #55c4b0; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+    --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #12151b; --card: #191d25; --ink: #e5e8ef; --muted: #9ba4b5; --rule: #2b313d; --wash: #1f242e;
+  --std: #9aa6ff; --map: #55c4b0; --ok: #72d491; --ok-soft: #173322; --some: #e3b553; --some-soft: #3a2f14;
+  --uniq-bg: #4b1f1c; --uniq-line: #ff7d70;
+  color-scheme: dark;
+}
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.55 var(--sans);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 32px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: inherit; }
+
+.intro { display: grid; gap: 16px; max-width: 800px; }
+.kicker { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 600 clamp(28px, 4.6vw, 40px)/1.12 var(--serif); letter-spacing: -.01em; }
+.lede { font: 400 18px/1.5 var(--serif); }
+.findings { display: grid; gap: 8px; margin: 0; padding-left: 20px; }
+.findings li::marker { color: var(--muted); }
+.findings b { font-weight: 600; }
+.std-t { color: var(--std); font-weight: 600; }
+.map-t { color: var(--map); font-weight: 600; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: center; font-size: 14px; color: var(--muted); }
+.controls label { display: inline-flex; gap: 8px; align-items: center; color: var(--ink); cursor: pointer; }
+.controls input { width: 16px; height: 16px; accent-color: var(--uniq-line); }
+.controls input:focus-visible { outline: 2px solid var(--uniq-line); outline-offset: 2px; }
+.key mark.u { padding: 1px 4px; }
+
+details.statement { background: var(--wash); border-radius: 6px; padding: 12px 16px; max-width: 860px; }
+details.statement summary { cursor: pointer; font: 500 13px/1.4 var(--sans); color: var(--muted); }
+details.statement summary:focus-visible { outline: 2px solid var(--std); outline-offset: 2px; }
+.stmt { display: grid; gap: .7em; margin-top: 8px; font: 400 16px/1.6 var(--serif); overflow-x: auto; }
+
+.cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: start; }
+.col { min-width: 0; background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 16px; }
+.col.standard { --c: var(--std); }
+.col.map { --c: var(--map); }
+.colhead { display: grid; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.colhead h2 { font: 600 18px/1.2 var(--sans); color: var(--c); display: flex; align-items: center; gap: 8px; }
+.sw { width: 11px; height: 11px; border-radius: 2px; background: var(--c); flex: none; }
+.stats { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font: 400 12.5px/1.3 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.chip { padding: 5px 8px; border-radius: 999px; font-weight: 500; }
+.standard .chip { background: var(--ok-soft); color: var(--ok); }
+.map .chip { background: var(--some-soft); color: var(--some); }
+
+.hint { display: grid; gap: 18px; }
+.para { display: grid; gap: 4px; }
+.role { font: 500 11.5px/1.3 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+.para > p:last-child { font: 400 16px/1.68 var(--serif); overflow-wrap: anywhere; overflow-x: auto; }
+
+mark.u {
+  background: var(--uniq-bg);
+  color: inherit;
+  box-shadow: inset 0 -2px 0 var(--uniq-line);
+  padding: 1px 2px;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+sup.ref { font: 600 11px/1 var(--mono); color: var(--uniq-line); margin-left: 2px; }
+.plain mark.u { background: none; box-shadow: none; padding: 0; }
+.plain sup.ref { display: none; }
+
+.only { border-top: 1px solid var(--rule); padding-top: 14px; display: grid; gap: 8px; }
+.only h3 { font: 600 13px/1.3 var(--sans); color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.only ol { margin: 0; padding-left: 22px; display: grid; gap: 6px; font-size: 14px; }
+.only li::marker { color: var(--uniq-line); font: 600 13px var(--mono); }
+.only b { font-weight: 600; }
+
+mjx-container[display="true"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; padding-block: 2px; }
+
+footer { color: var(--muted); font-size: 13px; border-top: 1px solid var(--rule); padding-top: 16px; }
+footer p { max-width: 860px; }
+
+@media (max-width: 820px) {
+  .cols { grid-template-columns: minmax(0, 1fr); }
+  .wrap { padding-block: 24px 48px; gap: 24px; }
+}
+</style>
+<style>
+/* Additions for this page: the token chart and the step table. Series colours: categorical slots 1-2. */
+:root { --s1: #2a78d6; --s2: #eb6834; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s1: #3987e5; --s2: #d95926; } }
+:root[data-theme="dark"] { --s1: #3987e5; --s2: #d95926; }
+.col.standard { --c: var(--s1); }
+.col.map { --c: var(--s2); }
+.std-t { color: var(--ink); } .map-t { color: var(--ink); }
+.std-t::before, .map-t::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: 1px; }
+.std-t::before { background: var(--s1); } .map-t::before { background: var(--s2); }
+.map .chip { background: var(--wash); color: var(--muted); }
+.panel { background: var(--card); border: 1px solid var(--rule); border-radius: 6px; padding: 18px 20px 20px; display: grid; gap: 14px; }
+.panel h2 { font: 600 18px/1.25 var(--sans); }
+.panel .sub { color: var(--muted); font-size: 14px; max-width: 860px; }
+.legend { display: flex; gap: 18px; font-size: 13.5px; color: var(--muted); flex-wrap: wrap; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.chart { display: grid; gap: 14px; position: relative; }
+.brow { display: grid; grid-template-columns: minmax(150px, 300px) minmax(0, 1fr); gap: 6px 16px; align-items: center; }
+.blabel { font-size: 14px; color: var(--ink); }
+.bpair { display: grid; gap: 2px; }
+.bline { display: flex; align-items: center; gap: 8px; height: 14px; }
+.bar { display: block; height: 12px; width: var(--w); min-width: 3px; border-radius: 0 4px 4px 0; cursor: default; }
+.bar.s1 { background: var(--s1); } .bar.s2 { background: var(--s2); }
+.bar:hover, .bar:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.bval { font: 500 12px/1 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--paper); font-size: 12.5px; padding: 6px 9px; border-radius: 4px; max-width: 280px; opacity: 0; transition: opacity .1s; z-index: 2; }
+.tip.on { opacity: 1; }
+table.steps { border-collapse: collapse; font-size: 14px; width: 100%; max-width: 640px; }
+.steps th, .steps td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--rule); }
+.steps th { font: 500 12px/1.2 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+.steps .sid { font: 500 12.5px/1 var(--mono); color: var(--muted); width: 44px; }
+.lv { font: 500 12px/1 var(--mono); padding: 3px 7px; border-radius: 999px; }
+.lv-how { background: var(--ink); color: var(--paper); }
+.lv-st { background: var(--wash); color: var(--ink); box-shadow: inset 0 0 0 1px var(--rule); }
+.lv-pa { color: var(--ink); box-shadow: inset 0 0 0 1px var(--muted); background: repeating-linear-gradient(135deg, transparent 0 3px, var(--wash) 3px 6px); }
+.lv-no { color: var(--muted); }
+.steps-wrap { overflow-x: auto; }
+.ublock { display: block; background: var(--uniq-bg); box-shadow: inset 3px 0 0 var(--uniq-line); border-radius: 2px; padding: 2px 10px; margin: 6px 0; }
+.plain .ublock { background: none; box-shadow: none; }
+@media (max-width: 640px) { .brow { grid-template-columns: minmax(0, 1fr); } }
+</style>
+<script>
+window.MathJax = {
+  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+  svg: { fontCache: "global" }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.js" defer></script>
+
+</head>
+<body>
+<div class="wrap" id="page">
+  <header class="intro">
+    <p class="kicker">OpenAI problem #322 · Tingley's problem · two hints of about 830 tokens</p>
+    <h1>What each #322 hint says that the other doesn't</h1>
+    <p class="lede">Both hints are about 830 Kimi tokens, just under 10% of the 8,437-token proof, and follow the same route: the defect M, an ultrapower that attains it, a return map with an invariant convex set, Darbo's theorem for aligned chords, and a contradiction from those chords. GPT-6 Astra wrote its hint in one go from the reference proof. Claude wrote the other a sentence or two per round over four rounds, keeping each round's text word for word. At the same settings (Kimi K3 at effort max, graded by GPT-6.1 Sol), <span class="std-t">Astra's</span> went 3/4 and <span class="map-t">Claude's</span> 0/2.</p>
+    <ul class="findings">
+      <li><b>Astra spends twice as much on the ratio inequalities:</b> about 340 tokens (41% of its hint) against 160 (20%) on the steps that turn aligned chords into the two ratio inequalities. That is where every attempt under Claude's hints stopped: both round-3 attempts at the ratio inequalities, round 4's s0 in deriving them, and round 4's s1 in ruling out large ratios when the time limit cut it off.</li>
+      <li><b>Claude's hint spends the difference earlier, and on repetition.</b> It spends more on the defect and ultrapower (about 100 tokens against 60), the alignment (400 against 320) and the final comparison (120 against 50), and it writes the aligned chords out twice and introduces the invariant set twice. Each round added text aimed at the last round's failure but could not rewrite what came before.</li>
+      <li><b>Astra's hint also says how to prove the contraction</b>, which Claude's only states; round 3's s0 spent 41% of its thinking on that step. Claude's hint has little that Astra's lacks: the answer stated first, why support propagation holds, and the profile identities written out.</li>
+      <li><b>Caveats:</b> 4 attempts against 2, so this suggests a link rather than proving one. The same Astra hint went 0/4 at effort high, so effort matters as well. Astra's three correct proofs used 86–87K output tokens; Claude's round-4 attempts ran longer (134K, and one cut off at the hour).</li>
+    </ul>
+  </header>
+
+  <section class="panel" aria-labelledby="h-split">
+    <h2 id="h-split">Where each hint spends its tokens</h2>
+    <p class="sub">Tokens by part of the proof. Each hint's total is exact (823 and 836 Kimi tokens); the split is estimated from each part's share of the hint's characters.</p>
+    <div class="legend"><span><i style="background:var(--s1)"></i>Astra (novelty 10%) · 3/4</span><span><i style="background:var(--s2)"></i>Claude (round 4) · 0/2</span></div>
+    <div class="chart" id="chart"><div class="brow"><p class="blabel">Answer and strategy</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:6.2%" tabindex="0" data-tip="Astra · Answer and strategy: about 25 tokens (3% of its hint)"></span><span class="bval">25</span></div>
+        <div class="bline"><span class="bar s2" style="--w:1.8%" tabindex="0" data-tip="Claude · Answer and strategy: about 7 tokens (1% of its hint)"></span><span class="bval">7</span></div>
+      </div></div><div class="brow"><p class="blabel">Defect and ultrapower (S3–S4)</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:15.5%" tabindex="0" data-tip="Astra · Defect and ultrapower (S3–S4): about 62 tokens (8% of its hint)"></span><span class="bval">62</span></div>
+        <div class="bline"><span class="bar s2" style="--w:26.0%" tabindex="0" data-tip="Claude · Defect and ultrapower (S3–S4): about 104 tokens (12% of its hint)"></span><span class="bval">104</span></div>
+      </div></div><div class="brow"><p class="blabel">Alignment: return map, invariant set, contraction, Darbo (S5–S9)</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:81.0%" tabindex="0" data-tip="Astra · Alignment: return map, invariant set, contraction, Darbo (S5–S9): about 324 tokens (39% of its hint)"></span><span class="bval">324</span></div>
+        <div class="bline"><span class="bar s2" style="--w:100.0%" tabindex="0" data-tip="Claude · Alignment: return map, invariant set, contraction, Darbo (S5–S9): about 400 tokens (48% of its hint)"></span><span class="bval">400</span></div>
+      </div></div><div class="brow"><p class="blabel">Ratio inequalities (S10–S13)</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:84.2%" tabindex="0" data-tip="Astra · Ratio inequalities (S10–S13): about 337 tokens (41% of its hint)"></span><span class="bval">337</span></div>
+        <div class="bline"><span class="bar s2" style="--w:40.8%" tabindex="0" data-tip="Claude · Ratio inequalities (S10–S13): about 163 tokens (19% of its hint)"></span><span class="bval">163</span></div>
+      </div></div><div class="brow"><p class="blabel">Final comparison (S14)</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:12.0%" tabindex="0" data-tip="Astra · Final comparison (S14): about 48 tokens (6% of its hint)"></span><span class="bval">48</span></div>
+        <div class="bline"><span class="bar s2" style="--w:30.0%" tabindex="0" data-tip="Claude · Final comparison (S14): about 120 tokens (14% of its hint)"></span><span class="bval">120</span></div>
+      </div></div><div class="brow"><p class="blabel">Linear extension (S15–S16)</p>
+      <div class="bpair">
+        <div class="bline"><span class="bar s1" style="--w:6.8%" tabindex="0" data-tip="Astra · Linear extension (S15–S16): about 27 tokens (3% of its hint)"></span><span class="bval">27</span></div>
+        <div class="bline"><span class="bar s2" style="--w:10.5%" tabindex="0" data-tip="Claude · Linear extension (S15–S16): about 42 tokens (5% of its hint)"></span><span class="bval">42</span></div>
+      </div></div><div class="tip" id="tip" role="tooltip"></div></div>
+  </section>
+
+  <section class="panel" aria-labelledby="h-steps">
+    <h2 id="h-steps">Step by step</h2>
+    <p class="sub">How each hint treats the 16 steps of Astra's map of the reference proof. <b>how</b>: says how to prove it · <b>stated</b>: gives the result · <b>partial</b>: part of the result, or only names the method · —: not in the hint.</p>
+    <div class="steps-wrap"><table class="steps"><thead><tr><th>Step</th><th></th><th>Astra</th><th>Claude</th></tr></thead><tbody><tr><td class="sid">S1</td><td>Common supports</td><td><span class="lv lv-no">—</span></td><td><span class="lv lv-no">—</span></td></tr><tr><td class="sid">S2</td><td>Radial contact</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-pa">partial</span></td></tr><tr><td class="sid">S3</td><td>Defect M, basic bounds</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S4</td><td>Ultrapower: M attained</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S5</td><td>Return map g</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-pa">partial</span></td></tr><tr><td class="sid">S6</td><td>Support propagation</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-how">how</span></td></tr><tr><td class="sid">S7</td><td>Convex invariant C</td><td><span class="lv lv-how">how</span></td><td><span class="lv lv-how">how</span></td></tr><tr><td class="sid">S8</td><td>Noncompactness shrinks</td><td><span class="lv lv-how">how</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S9</td><td>Darbo: aligned chords</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S10</td><td>Secant estimate</td><td><span class="lv lv-how">how</span></td><td><span class="lv lv-pa">partial</span></td></tr><tr><td class="sid">S11</td><td>B &gt; ε forces A &gt; ε</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-no">—</span></td></tr><tr><td class="sid">S12</td><td>Large ratios excluded</td><td><span class="lv lv-how">how</span></td><td><span class="lv lv-pa">partial</span></td></tr><tr><td class="sid">S13</td><td>Ratio inequalities</td><td><span class="lv lv-how">how</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S14</td><td>Profile comparison</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-how">how</span></td></tr><tr><td class="sid">S15</td><td>M = 0: isometry</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-st">stated</span></td></tr><tr><td class="sid">S16</td><td>Mazur–Ulam: linear</td><td><span class="lv lv-st">stated</span></td><td><span class="lv lv-st">stated</span></td></tr></tbody></table></div>
+  </section>
+
+  <div class="controls">
+    <label for="hl"><input type="checkbox" id="hl" checked> Highlight what only one hint says</label>
+    <span class="key"><mark class="u">red</mark><sup class="ref">1</sup> = only in this hint, keyed to the list under each column</span>
+  </div>
+
+  <details class="statement">
+    <summary>Problem statement</summary>
+    <div class="stmt"><p>For a real normed space $X$, write $S_X=\{x\in X:\lVert x\rVert=1\}$ for its unit sphere, with the distance inherited from $X$.</p><p>Let $X$ and $Y$ be nonzero real Banach spaces. The spaces may have arbitrary dimension and need not be separable, reflexive, smooth, or strictly convex.</p><p>Determine whether every surjective isometry $f:S_X\to S_Y$ extends to a surjective real-linear isometry of the spaces, that is, whether there is always a surjective real-linear isometry $T:X\to Y$ with $T(x)=f(x)$ for every $x\in S_X$. Prove your answer.</p></div>
+  </details>
+
+  <div class="cols" id="cols">
+    <section class="col standard" aria-labelledby="h-standard">
+      <header class="colhead">
+        <h2 id="h-standard"><span class="sw"></span>Astra · novelty 10%</h2>
+        <p class="stats"><span class="chip">3/4 correct</span><span>823 tokens</span><span>written in one go</span></p>
+      </header>
+      <div class="hint"><div class="para"><p class="role">1 · Strategy, defect, attainment</p><p><mark class="u">Align extremal chords using a continuous return map that contracts noncompactness.</mark><sup class="ref" aria-label="note 1">1</sup> Let \(M=\sup|\|f(x)-qf(y)\|-\|x-qy\||\), over unit \(x,y\) and \(0\le q\le1\). If \(M&gt;0\), inversion and an ultrapower attain a positive maximum at \((x_0,y,t)\), \(0&lt;t&lt;1\), retaining the global bound.</p></div>
+<div class="para"><p class="role">2 · Return map, support propagation, invariant set</p><p>Put \(b=f(y)\). For a unit direction \(v\), construct successive sphere contacts
+\[
+x=ty+pv,\qquad f(x)=tb+sw,\qquad f(z)=tb-uw,
+\]
+with \(w\in S_Y\), and set \(r=\|ty-z\|\), \(g(v)=(ty-z)/r\). <mark class="u">All radii lie in \([1-t,1+t]\).</mark><sup class="ref" aria-label="note 2">2</sup> On \(E=\{v:s-p=M\}\), <mark class="u">maximality forces \(r-u=M\) and</mark><sup class="ref" aria-label="note 2">2</sup> a common support for \(v,g(v)\). Every unit direction sharing a support with \(g(v)\) lies in \(E\). Use this to build a nonempty closed convex invariant \(C\subset E\): repeatedly adjoin \(g(a_n)\), where \(a_n\) is a strictly positive convex combination of previous directions, arranging the \(a_n\) dense in \(C\). Strict positivity makes a support at \(a_n,g(a_n)\) support all preceding directions.</p></div>
+<div class="para"><p class="role">3 · Contraction and Darbo</p><p><mark class="u">Comparing directions gives coefficient \(up/(rs)\le\gamma=(1-M/(1+t))^2&lt;1\), with errors controlled by scalar differences of \(p,u\). Partition those ranges into small intervals</mark><sup class="ref" aria-label="note 3">3</sup> to obtain \(\chi(g(H))\le\gamma\chi(H)\) for \(H\subset C\), where \(\chi\) is Kuratowski noncompactness. Darbo yields \(g(v)=v\), hence aligned chords with \(s-p=r-u=M\) <mark class="u">and \(d=p+r=s+u\le2\)</mark><sup class="ref" aria-label="note 4">4</sup>.</p></div>
+<div class="para"><p class="role">4 · The secant estimate</p><p><mark class="u">Set \(\epsilon=1-t,\ A=p/d,\ B=u/d\); then \(A+B&lt;1\).</mark><sup class="ref" aria-label="note 4">4</sup> Take \(h=\min(t/s,\epsilon/u)\). Weight the signed defect at \(t-sh\) by \(u\), and the negative signed defect at \(t+uh\) by \(s\). One vanishes, while the common target norm cancels. Supporting the resulting source secant gives, for every support \(\varphi\) at \(v+(hs/p)y\),
+<span class="ublock"><sup class="ref" aria-label="note 5">5</sup>\[
+\epsilon/p\le\varphi(v)\le
+\begin{cases}1-B,&amp;B\le\epsilon,\\ B,&amp;B&gt;\epsilon.\end{cases}
+\]</span></p></div>
+<div class="para"><p class="role">5 · Large ratios excluded</p><p><mark class="u">If \(B&gt;\epsilon\), deduce that every support at \(v\) is negative on \(y\), that \(u&lt;r&lt;1\), and that \(pu\ge d\epsilon\); hence \(A&gt;\epsilon\). The inverse configuration interchanges \(A,B\), so either strict inequality also forces every support at \(w\) to be positive on \(b\). Decreasing \(t\) slightly increases the target norm and decreases the source norm, contradicting maximality. For the source decrease, use compactness of supports on \(\operatorname{span}\{v,y\}\).</mark><sup class="ref" aria-label="note 6">6</sup></p></div>
+<div class="para"><p class="role">6 · Ratio inequalities, contradiction, result</p><p><mark class="u">Otherwise the two configurations give \(\epsilon\le dA(1-B)\) and \(\epsilon\le dB(1-A)\). Since \(A+B&lt;1\) and \(d\le2\), infer \(\epsilon&lt;1/2\).</mark><sup class="ref" aria-label="note 7">7</sup> Now \(p/t&lt;r/\epsilon\) and \(u/\epsilon\le s/t\). Starting from the unit endpoint identities, convexity gives
+\[
+\|y+(r/\epsilon)v\|&gt;1/t\ge\|b+(u/\epsilon)w\|,
+\]
+contradicting preservation of \(\|y-z\|\). Thus \(M=0\); scaling gives an onto radial isometry, and Mazur–Ulam gives real linearity.</p></div>
+</div>
+      <div class="only">
+        <h3>Only in Astra's hint</h3>
+        <ol><li><b>The whole route in one opening sentence:</b> align extremal chords with a return map that contracts noncompactness.</li><li><b>What maximality gives on E:</b> the radii lie in [1−t, 1+t] and r − u = M. The contraction factor and the ratios at the end use both.</li><li><b>How to prove the contraction:</b> compare two directions to get the coefficient up/(rs) ≤ γ plus error terms in p and u, then cut the p, u ranges into short intervals. Claude's hint gives only the factor γ; round 3's s0 spent 41% of its thinking on this step.</li><li><b>The normalisation the ending runs on:</b> the chord length d = p + r = s + u ≤ 2 and the ratios A = p/d, B = u/d with A + B &lt; 1.</li><li><b>Both sides of the secant bound:</b> ε/p ≤ φ(v), and above by 1 − B or B depending on whether B ≤ ε. Claude's hint gives only the lower bound.</li><li><b>What a large ratio forces, and why it can't happen:</b> if B &gt; ε, supports at v are negative on y and A &gt; ε; the inverse map swaps A and B, and decreasing t slightly contradicts maximality. Claude's hint compresses this to "a radial perturbation of t rules out u &gt; ε(p + r)". Round 4's s1 was cut off at the one-hour limit while working on this case.</li><li><b>How the ratio inequalities follow:</b> ε ≤ dA(1 − B) and ε ≤ dB(1 − A), with A + B &lt; 1 and d ≤ 2, give ε &lt; 1/2 and then p/t &lt; r/ε and u/ε ≤ s/t. Claude's hint states these two inequalities only as the goal. Round 4's s0 broke exactly here: it ordered the ratios by subtracting two inequalities that point the same way.</li></ol>
+      </div>
+    </section>
+    <section class="col map" aria-labelledby="h-map">
+      <header class="colhead">
+        <h2 id="h-map"><span class="sw"></span>Claude · round 4</h2>
+        <p class="stats"><span class="chip">0/2 correct</span><span>836 tokens</span><span>written over four rounds</span></p>
+      </header>
+      <div class="hint"><div class="para"><p class="role">Round 1 · 168 tokens · answer, defect, ultrapower</p><p><mark class="u">The answer is yes.</mark><sup class="ref" aria-label="note 1">1</sup> For \(a,c\in S_X\) and \(0\le q\le1\) put \(D_q(a,c)=\|f(a)-qf(c)\|-\|a-qc\|\) and \(M=\sup|D_q(a,c)|\): if \(M=0\), the radial map \(T(x)=\|x\|f(x/\|x\|)\) is a surjective isometry fixing \(0\), hence linear by Mazur–Ulam. To rule out \(M&gt;0\), pass to ultrapowers to get a surjective sphere isometry with the same defect bound \(M\) at which it is attained, \(D_t(x_0,y)=M\) for some \(x_0,y\) and \(0&lt;t&lt;1\).</p></div>
+<div class="para"><p class="role">Round 2 · +212 · return map, invariant set, contraction factor, Darbo</p><p>With \(b=f(y)\), use a return map: for a unit direction \(v\) take the sphere point \(x=ty+pv\) (\(p&gt;0\)), write \(f(x)=tb+sw\), take the opposite sphere point \(f(z)=tb-uw\) on the line through \(tb\), and set \(g(v)=(ty-z)/\|ty-z\|\). On \(E=\{v:s-p=M\}\), \(v\) and \(g(v)\) share a supporting functional, which yields a nonempty closed convex \(C\subset E\) with \(g(C)\subset C\) on which \(g\) shrinks the Kuratowski measure of noncompactness by the factor \((1-M/(1+t))^2&lt;1\); Darbo's theorem then gives aligned chords <mark class="u">\(x=ty+pv\), \(z=ty-rv\), \(f(x)=tb+sw\), \(f(z)=tb-uw\)</mark><sup class="ref" aria-label="note 4">4</sup> with \(s-p=r-u=M\).</p></div>
+<div class="para"><p class="role">Round 3 · +321 · how to build the set, the final comparison</p><p><mark class="u">The set \(C\) comes from a stronger fact:</mark><sup class="ref" aria-label="note 4">4</sup> if \(v\in E\) and a unit \(l\) shares a supporting functional with \(g(v)\), then \(l\in E\), <mark class="u">since the \(z,r,u\) of \(v\) give \(p(l)+r=\|x(l)-z\|\le s(l)+u\)</mark><sup class="ref" aria-label="note 2">2</sup>; so from \(v_0\in E\) set \(v_{n+1}=g(a_n)\), with \(a_n\) a strictly positive convex combination of \(v_0,\dots,v_n\) chosen so that the \(a_n\) are dense in \(C=\overline{\operatorname{conv}}\{v_n\}\), and a common support of \(a_n\) and \(v_{n+1}\) equals 1 on every \(v_i\), which keeps each hull inside \(E\). The aligned chords are contradictory: with \(\epsilon=1-t\), the convex profiles \(F(\lambda)=\|y+\lambda v\|\) and \(G(\lambda)=\|b+\lambda w\|\) <mark class="u">satisfy \(F(0)=G(0)=1\), \(F(p/t)=G(s/t)=1/t\) and \(\epsilon F(r/\epsilon)=\|y-z\|=\|b-f(z)\|=\epsilon G(u/\epsilon)\)</mark><sup class="ref" aria-label="note 3">3</sup>, so it suffices to show \(p/t&lt;r/\epsilon\) and \(u/\epsilon\le s/t\), which follow from the defect bound at nearby radii applied to \(f\) and \(f^{-1}\).</p></div>
+<div class="para"><p class="role">Round 4 · +135 · the weighted secant estimate</p><p>For them, weight \(D_{t-sh}(x,y)\) and \(-D_{t+uh}(z,y)\), with \(h=\min(t/s,\epsilon/u)\), by \(u\) and \(s\): this cancels \(\|w+hb\|\) and bounds the slope of \(\lambda\mapsto\|\lambda v+hy\|\) on \([p/s,r/u]\), which supports at \(v+(hs/p)y\) bound below by \(\epsilon/p\); do the same for \(f^{-1}\), after a radial perturbation of \(t\) rules out \(u&gt;\epsilon(p+r)\).</p></div>
+</div>
+      <div class="only">
+        <h3>Only in Claude's hint</h3>
+        <ol><li><b>The answer, first.</b> Astra's hint implies it only in its last sentence.</li><li><b>Why support propagation holds:</b> the inequality p(l) + r = ‖x(l) − z‖ ≤ s(l) + u.</li><li><b>The profile identities</b> behind the final comparison. Astra's hint gives only the inequality they lead to.</li><li><b>Repetition from adding text round by round:</b> the aligned chords are written out a second time after Darbo, and the invariant set, stated in round 2, is introduced again in round 3 to say how it is built.</li></ol>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <p>From the insight-gen runs om_kimi_max10 (Astra's hint) and om322_incremental (Claude's): Kimi K3 at effort max through OpenRouter on Moonshot's endpoint, graded by GPT-6.1 Sol. Hint texts are exactly as Kimi saw them; Claude's was a single paragraph, split here by the round that added each part. Step names follow Astra's 16-step map of the reference proof; the proof itself is not shown.</p>
+  </footer>
+</div>
+<script>
+(function () {
+  var box = document.getElementById("hl"), page = document.getElementById("cols");
+  function apply() { page.classList.toggle("plain", !box.checked); }
+  box.addEventListener("change", apply);
+  apply();
+  var chart = document.getElementById("chart"), tip = document.getElementById("tip");
+  function show(e) {
+    var b = e.currentTarget, r = b.getBoundingClientRect(), c = chart.getBoundingClientRect();
+    tip.textContent = b.dataset.tip;
+    tip.style.left = Math.min(r.right - c.left + 8, c.width - 290) + "px";
+    tip.style.top = (r.top - c.top - 6) + "px";
+    tip.classList.add("on");
+  }
+  function hide() { tip.classList.remove("on"); }
+  chart.querySelectorAll(".bar").forEach(function (b) {
+    b.addEventListener("mouseenter", show); b.addEventListener("focus", show);
+    b.addEventListener("mouseleave", hide); b.addEventListener("blur", hide);
+  });
+})();
+</script>
+</body>
+</html>
